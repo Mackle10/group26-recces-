@@ -1,0 +1,96 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // User profile security rules
+    match /users/{userId} {
+      allow read, write: if isUser(userId);
+      
+      // Subcollections under user
+      match /pickups/{pickupId} {
+        allow read: if isUser(userId);
+        allow create: if isUser(userId);
+        allow update, delete: if isCompany() || isAdmin();
+      }
+      
+      match /recyclables/{recyclableId} {
+        allow read: if isUser(userId) || isCompany();
+        allow create: if isUser(userId);
+        allow update, delete: if isCompany() || isAdmin();
+      }
+      
+      match /payments/{paymentId} {
+        allow read: if isUser(userId) || isCompany();
+        allow create: if isCompany();
+      }
+    }
+    
+    // Company profile security rules
+    match /companies/{companyId} {
+      allow read: if true; // Public info
+      allow write: if isCompany(companyId) || isAdmin();
+      
+      // Company's pickup assignments
+      match /assigned_pickups/{pickupId} {
+        allow read, write: if isCompany(companyId) || isAdmin();
+      }
+    }
+    
+    // Global collections
+    match /pickups/{pickupId} {
+      allow read: if isUserAssociated(pickupId) || isCompany() || isAdmin();
+      allow create: if isUser();
+      allow update, delete: if isCompany() || isAdmin();
+    }
+    
+    match /recyclables/{recyclableId} {
+      allow read: if isUser() || isCompany() || isAdmin();
+      allow create: if isUser();
+      allow update, delete: if isCompany() || isAdmin();
+    }
+    
+    match /payments/{paymentId} {
+      allow read: if isPaymentParticipant(paymentId);
+      allow create: if isCompany();
+      allow update: if isAdmin();
+    }
+    
+    // Admin-only collections
+    match /admin/{document=**} {
+      allow read, write: if isAdmin();
+    }
+    
+    // Helper functions
+    function isUser(userId) {
+      return request.auth != null && 
+             (userId == request.auth.uid || isAdmin());
+    }
+    
+    function isCompany(companyId) {
+      return request.auth != null && 
+             (get(/databases/$(database)/documents/companies/$(request.auth.uid)).data.role == "company" ||
+              (companyId != null && companyId == request.auth.uid) ||
+              isAdmin());
+    }
+    
+    function isAdmin() {
+      return request.auth != null && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+    
+    function isUserAssociated(pickupId) {
+      return request.auth != null && 
+             (get(/databases/$(database)/documents/pickups/$(pickupId)).data.userId == request.auth.uid ||
+              isCompany() || 
+              isAdmin());
+    }
+    
+    function isPaymentParticipant(paymentId) {
+      let payment = get(/databases/$(database)/documents/payments/$(paymentId));
+      return request.auth != null && 
+             (payment.data.userId == request.auth.uid ||
+              payment.data.companyId == request.auth.uid ||
+              isAdmin());
+    }
+  }
+}

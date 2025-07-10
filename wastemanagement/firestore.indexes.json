@@ -1,0 +1,22 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "pickups",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "status", "order": "ASCENDING"},
+        {"fieldPath": "scheduledDate", "order": "ASCENDING"},
+        {"fieldPath": "location", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "recyclables",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "type", "order": "ASCENDING"},
+        {"fieldPath": "status", "order": "ASCENDING"},
+        {"fieldPath": "createdAt", "order": "DESCENDING"}
+      ]
+    }
+  ]
+}

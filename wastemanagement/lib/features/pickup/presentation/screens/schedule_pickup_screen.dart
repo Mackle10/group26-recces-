@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:waste_management_app/core/constants/app_strings.dart';
-import 'package:waste_management_app/features/pickup/presentation/bloc/pickup_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:waste_management_app/core/constants/app_colors.dart';
 
 class SchedulePickupScreen extends StatefulWidget {
   const SchedulePickupScreen({super.key});
@@ -11,9 +10,10 @@ class SchedulePickupScreen extends StatefulWidget {
 }
 
 class _SchedulePickupScreenState extends State<SchedulePickupScreen> {
-  DateTime? _selectedDate;
+  late GoogleMapController mapController;
+  final LatLng _center = const LatLng(-1.2921, 36.8219);
   String? _selectedWasteType;
-  final List<String> _wasteTypes = ['General', 'Recyclable', 'Hazardous'];
+  DateTime? _selectedDate;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -32,70 +32,88 @@ class _SchedulePickupScreenState extends State<SchedulePickupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.schedulePickup)),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            DropdownButtonFormField<String>(
-              value: _selectedWasteType,
-              decoration: const InputDecoration(labelText: AppStrings.wasteType),
-              items: _wasteTypes.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedWasteType = newValue;
-                });
-              },
-              validator: (value) => value == null ? AppStrings.selectWasteType : null,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _selectDate(context),
-              child: Text(_selectedDate == null
-                  ? AppStrings.selectDate
-                  : '${AppStrings.selectedDate}: ${_selectedDate!.toLocal()}'.split(' ')[0]),
-            ),
-            const SizedBox(height: 20),
-            BlocConsumer<PickupBloc, PickupState>(
-              listener: (context, state) {
-                if (state is PickupScheduled) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text(AppStrings.pickupScheduled)),
-                  );
-                  Navigator.pop(context);
-                } else if (state is PickupError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.message)),
-                  );
-                }
-              },
-              builder: (context, state) {
-                if (state is PickupLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return ElevatedButton(
-                  onPressed: _selectedDate == null || _selectedWasteType == null
-                      ? null
-                      : () {
-                          context.read<PickupBloc>().add(
-                                SchedulePickupEvent(
-                                  wasteType: _selectedWasteType!,
-                                  pickupDate: _selectedDate!,
-                                ),
-                              );
-                        },
-                  child: const Text(AppStrings.schedulePickup),
-                );
+      appBar: AppBar(
+        title: const Text('Schedule Pickup'),
+        backgroundColor: AppColors.primary,
+      ),
+      body: Column(
+        children: [
+          SizedBox(
+            height: 250,
+            child: GoogleMap(
+              onMapCreated: (controller) => mapController = controller,
+              initialCameraPosition: CameraPosition(
+                target: _center,
+                zoom: 15,
+              ),
+              markers: {
+                Marker(
+                  markerId: const MarkerId('pickup_location'),
+                  position: _center,
+                ),
               },
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  DropdownButtonFormField<String>(
+                    value: _selectedWasteType,
+                    decoration: InputDecoration(
+                      labelText: 'Waste Type',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    items: ['General', 'Recyclable', 'Hazardous']
+                        .map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedWasteType = value;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.lightGreen2,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    onPressed: () => _selectDate(context),
+                    child: Text(
+                      _selectedDate == null
+                          ? 'Select Pickup Date'
+                          : 'Selected: ${_selectedDate!.toLocal()}'.split(' ')[0],
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondary,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    onPressed: _selectedDate == null || _selectedWasteType == null
+                        ? null
+                        : () {
+                            // Handle pickup scheduling
+                            Navigator.pop(context);
+                          },
+                    child: const Text('Confirm Pickup'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

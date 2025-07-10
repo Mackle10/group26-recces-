@@ -1,8 +1,11 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:waste_management_app/core/constants/firebase_constants.dart';
-import 'package:waste_management_app/routes/app_routes.dart';
-import 'package:waste_management_app/routes/route_generator.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:wastemanagement/core/constants/firebase_constants.dart';
+import 'package:wastemanagement/core/constants/firebase_constants.dart';
+import 'package:wastemanagement/core/constants/app_colors.dart';
+import 'package:wastemanagement/core/constants/app_strings.dart';
+import 'package:wastemanagement/routes/app_routes.dart';
+import 'package:wastemanagement/routes/route_generator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,12 +19,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Waste Management',
+         title: 'Waste Management',
       theme: ThemeData(
         primarySwatch: Colors.green,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        colorScheme: ColorScheme.light(
+          primary: AppColors.primary,
+          secondary: AppColors.secondary,
+        ),
+        scaffoldBackgroundColor: AppColors.background,
       ),
-      initialRoute: AppRoutes.splash,
+      initialRoute: AppRoutes.login,
       onGenerateRoute: RouteGenerator.generateRoute,
       debugShowCheckedModeBanner: false,
     );
