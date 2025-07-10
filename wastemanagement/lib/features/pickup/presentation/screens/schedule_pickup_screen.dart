@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:waste_management_app/core/constants/app_colors.dart';
+import 'package:wastemanagement/core/constants/app_colors.dart';
 
 class SchedulePickupScreen extends StatefulWidget {
   const SchedulePickupScreen({super.key});

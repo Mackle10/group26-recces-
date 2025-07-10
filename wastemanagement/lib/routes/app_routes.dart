@@ -1,3 +1,9 @@
+import 'package:wastemanagement/features/auth/presentation/screens/login_screen.dart';
+import 'package:wastemanagement/features/auth/presentation/screens/register_screen.dart';
+import 'package:wastemanagement/features/company/company_dashboard.dart';
+import 'package:wastemanagement/features/home/presentation/screens/home_screen.dart';
+import 'package:wastemanagement/features/pickup/presentation/screens/schedule_pickup_screen.dart';
+
 class AppRoutes {
   static const initial = '/';
   static const login = '/login';
@@ -16,4 +22,12 @@ class AppRoutes {
     companyDashboard: (context) => const CompanyDashboard(),
     // Add other routes here
   };
+}
+// need attention
+abstract class AppRoutes {
+  static const String recyclableList = '/recyclable-list';
+  static const String sellScreen = '/sell';
+  
+  static String getRecyclableListRoute() => recyclableList;
+  static String getSellScreenRoute() => sellScreen;
 }
