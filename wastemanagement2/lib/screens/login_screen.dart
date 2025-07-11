@@ -28,9 +28,10 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
-    
-    final AppAuthProvider = Provider.of<AppAuthProvider>(context, listen: false);
-    final success = await AppAuthProvider.login(
+
+    final localContext = context;
+    final authProvider = Provider.of<AuthProvider>(localContext, listen: false);
+    final success = await authProvider.login(
       _emailController.text.trim(),
       _passwordController.text.trim(),
     );
@@ -38,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = false);
 
     if (!success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(localContext).showSnackBar(
         const SnackBar(content: Text('Login failed. Please try again.')),
       );
     }

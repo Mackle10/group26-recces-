@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => my_auth.AppAuthProvider()),
+        ChangeNotifierProvider(create: (_) => my_auth.AuthProvider()),
         Provider(create: (_) => FirebaseService()),
       ],
       child: MaterialApp(
@@ -56,7 +56,7 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppAuthProvider = Provider.of<AppAuthProvider>(context);
+    final AuthProvider = Provider.of<AuthProvider>(context);
     
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),

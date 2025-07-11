@@ -44,7 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadUserData() async {
-    final user = Provider.of<AppAuthProvider>(context, listen: false).user;
+    final user = Provider.of<AuthProvider>(context, listen: false).user;
     if (user != null) {
       final userData = await FirebaseService().getUserData(user.uid);
       setState(() {
@@ -72,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     setState(() => _isLoading = true);
 
-    final user = Provider.of<AppAuthProvider>(context, listen: false).user;
+    final user = Provider.of<AuthProvider>(context, listen: false).user;
     if (user != null) {
       try {
         // In a real app, you would upload the image to Firebase Storage
@@ -102,13 +102,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _logout() async {
-    await Provider.of<AppAuthProvider>(context, listen: false).logout();
+    await Provider.of<AuthProvider>(context, listen: false).logout();
     Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<AppAuthProvider>(context).user;
+    final user = Provider.of<AuthProvider>(context).user;
 
     return Scaffold(
       appBar: AppBar(

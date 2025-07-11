@@ -53,7 +53,7 @@ class _RecyclablesScreenState extends State<RecyclablesScreen> {
 
     setState(() => _isLoading = true);
 
-    final user = Provider.of<AppAuthProvider>(context, listen: false).user;
+    final user = Provider.of<AuthProvider>(context, listen: false).user;
     final firebaseService = FirebaseService();
 
     // In a real app, you would upload the image to Firebase Storage

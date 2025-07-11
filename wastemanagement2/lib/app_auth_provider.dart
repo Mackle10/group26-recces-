@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wastemanagement2/firebase_service.dart';
 
-class AppAuthProvider with ChangeNotifier {
+class AuthProvider with ChangeNotifier {
   final FirebaseService _firebaseService = FirebaseService();
   User? _user;
 
   User? get user => _user;
 
-  AppAuthProvider() {
+  AuthProvider() {
     _init();
   }
 

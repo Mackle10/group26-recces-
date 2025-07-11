@@ -5,6 +5,7 @@ import 'package:wastemanagement2/screens/schedule_pickup_screen.dart';
 import 'package:wastemanagement2/screens/recyclables_screen.dart';
 import 'package:wastemanagement2/screens/profile_screen.dart';
 // import 'package:wastemanagement2/screens/settings_screen.dart';
+import 'package:wastemanagement2/screens/map_screen.dart';
 import 'package:wastemanagement2/theme.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -80,7 +81,49 @@ class HomeContentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<AppAuthProvider>(context).user;
+    final user = Provider.of<AuthProvider>(context).user;
+          const SizedBox(height: 20),
+          Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.map, color: AppTheme.primaryColor),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Google Map',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'View your location and nearby facilities on Google Maps',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MapScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text('Open Map'),
+                  ),
+                ],
+              ),
+            ),
+          )
     
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -92,8 +135,8 @@ class HomeContentScreen extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
-          ),
-          const SizedBox(height: 8),
+          )
+              const SizedBox(height: 8),
           Text(
             'Manage your waste efficiently',
             style: Theme.of(context).textTheme.bodyMedium,

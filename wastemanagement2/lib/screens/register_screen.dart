@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wastemanagement2/app_auth_provider.dart'; // Ensure this file exports AppAuthProvider class
+import 'package:wastemanagement2/app_auth_provider.dart'; // Ensure this file exports AuthProvider class
 import 'package:wastemanagement2/theme.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -33,9 +33,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
-    
-    final AppAuthProvider = Provider.of<AppAuthProvider>(context, listen: false);
-    final success = await AppAuthProvider.register(
+
+    final localContext = context;
+    final authProvider = Provider.of<AuthProvider>(localContext, listen: false);
+    final success = await authProvider.register(
       _emailController.text.trim(),
       _passwordController.text.trim(),
       _nameController.text.trim(),
@@ -45,7 +46,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => _isLoading = false);
 
     if (!success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(localContext).showSnackBar(
         const SnackBar(content: Text('Registration failed. Please try again.')),
       );
     }

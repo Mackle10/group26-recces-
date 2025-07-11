@@ -62,7 +62,7 @@ class _SchedulePickupScreenState extends State<SchedulePickupScreen> {
 
     setState(() => _isLoading = true);
 
-    final user = Provider.of<AppAuthProvider>(context, listen: false).user;
+    final user = Provider.of<AuthProvider>(context, listen: false).user;
     final firebaseService = FirebaseService();
 
     final pickupData = {

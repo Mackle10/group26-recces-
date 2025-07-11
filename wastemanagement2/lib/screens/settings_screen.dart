@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wastemanagement2/app_auth_provider.dart' as my_auth;
+import 'package:wastemanagement2/app_auth_provider.dart';
 import 'package:wastemanagement2/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:share_plus/share_plus.dart';
@@ -106,7 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Center(
             child: ElevatedButton(
               onPressed: () {
-                Provider.of<my_auth.AppAuthProvider>(context, listen: false).logout();
+                Provider.of<AuthProvider>(context, listen: false).logout();
                 Navigator.pushNamedAndRemoveUntil(
                     context, '/login', (route) => false);
               },
@@ -200,12 +200,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  // Future<void> _shareApp() async {
-  //   await Share.share(
-  //     'Check out this Waste Management App!\nhttps://example.com/app',
-  //     subject: 'Waste Management App',
-  //   );
-  // }
+  Future<void> _shareApp() async {
+    // Uncomment the following lines if share_plus is added to pubspec.yaml
+    // await Share.share(
+    //   'Check out this Waste Management App!\nhttps://example.com/app',
+    //   subject: 'Waste Management App',
+    // );
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Share functionality not implemented.')),
+    );
+  }
 
   Future<void> _showPasswordChangeDialog() async {
     final currentPasswordController = TextEditingController();
@@ -261,10 +265,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               }
 
               try {
-                final user = Provider.of<AppAuthProvider>(context, listen: false).user;
+                final user = Provider.of<AuthProvider>(context, listen: false).user;
                 if (user != null) {
                   // Reauthenticate first
-                  final credential = EmailAppAuthProvider.credential(
+                  final credential = EmailAuthProvider.credential(
                     email: user.email!,
                     password: currentPasswordController.text,
                   );
