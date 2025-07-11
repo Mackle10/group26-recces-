@@ -72,15 +72,18 @@ class _RecyclablesScreenState extends State<RecyclablesScreen> {
 
     try {
       await firebaseService.postRecyclable(recyclableData);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Recyclable posted successfully!')),
       );
       Navigator.pop(context);
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
       );
     } finally {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }

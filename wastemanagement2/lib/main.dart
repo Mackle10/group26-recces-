@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:wastemanagement2/app_auth_provider.dart' as my_auth;
 import 'package:wastemanagement2/screens/login_screen.dart';
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
           '/': (context) => const AuthWrapper(),
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
-          '/home': (context) => const HomeScreen(),
+          '/home': (context) => const HomeContentScreen(),
           '/schedule-pickup': (context) => const SchedulePickupScreen(),
           '/recyclables': (context) => const RecyclablesScreen(),
           '/profile': (context) => const ProfileScreen(),
@@ -56,8 +56,6 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthProvider = Provider.of<AuthProvider>(context);
-    
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
@@ -66,7 +64,7 @@ class AuthWrapper extends StatelessWidget {
           if (user == null) {
             return const LoginScreen();
           }
-          return const HomeScreen();
+          return const HomeContentScreen();
         }
         return const Scaffold(
           body: Center(

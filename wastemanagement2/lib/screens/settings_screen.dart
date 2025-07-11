@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wastemanagement2/app_auth_provider.dart';
+import 'package:wastemanagement2/app_auth_provider.dart' as app_auth;
 import 'package:wastemanagement2/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:share_plus/share_plus.dart';
@@ -106,7 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Center(
             child: ElevatedButton(
               onPressed: () {
-                Provider.of<AuthProvider>(context, listen: false).logout();
+                Provider.of<app_auth.AuthProvider>(context, listen: false).logout();
                 Navigator.pushNamedAndRemoveUntil(
                     context, '/login', (route) => false);
               },
@@ -265,7 +265,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               }
 
               try {
-                final user = Provider.of<AuthProvider>(context, listen: false).user;
+                final user = Provider.of<app_auth.AuthProvider>(context, listen: false).user;
                 if (user != null) {
                   // Reauthenticate first
                   final credential = EmailAuthProvider.credential(
