@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wastemanagement/core/constants/app_colors.dart';
 import 'package:wastemanagement/core/constants/app_strings.dart';
-import 'package:wastemanagement/core/widgets/custom_button.dart';
+import 'package:wastemanagement/widgets/custom_button.dart';
 import 'package:wastemanagement/features/home/presentation/widgets/waste_stats_card.dart';
 import 'package:wastemanagement/features/map/presentation/screens/map_screen.dart';
 import 'package:wastemanagement/features/pickup/presentation/screens/schedule_pickup_screen.dart';
-import 'package:wastemanagement/features/recyclables/presentation/screens/recyclables_marketplace.dart';
+import 'package:wastemanagement/features/recyclable/presentation/screens/recyclables_marketplace.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -123,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
             ),
             const SizedBox(height: 16),
-            const WasteStatsCard(),
+            // O11 const WasteStatsCard(),
             const SizedBox(height: 24),
 
             // Recyclables Marketplace Section

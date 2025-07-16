@@ -1,6 +1,4 @@
 part of 'auth_bloc.dart';
-import 'package:meta/meta.dart';
-import 'package:equatable/equatable.dart';
 
 @immutable
 sealed class AuthEvent extends Equatable {
@@ -64,3 +62,42 @@ class DeleteAccountRequested extends AuthEvent {}
 // Email verification
 class EmailVerificationSent extends AuthEvent {}
 class VerifyEmailRequested extends AuthEvent {}
+
+// O11:B
+class ForgotPasswordEvent extends AuthEvent {
+  final String email;
+
+  const ForgotPasswordEvent({required this.email});
+
+  @override
+  List<Object> get props => [email];
+}
+
+class LoginEvent extends AuthEvent {
+  final String email;
+  final String password;
+
+  const LoginEvent({
+    required this.email,
+    required this.password,
+  });
+
+  @override
+  List<Object> get props => [email, password];
+}
+
+class RegisterEvent extends AuthEvent {
+  final String name;
+  final String email;
+  final String phone;
+  final String password;
+
+  RegisterEvent({
+    required this.name,
+    required this.email,
+    required this.phone,
+    required this.password,
+  });
+}
+
+// O11:E

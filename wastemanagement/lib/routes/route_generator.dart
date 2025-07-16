@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../features/recyclable/screens/recyclable_list_screen.dart';
-import '../features/recyclable/screens/sell_screen.dart';
+import '../features/recyclable/presentation/screens/recyclable_list_screen.dart';
+import '../features/recyclable/presentation/screens/sell_screen.dart';
 import 'app_routes.dart';
 
 class RouteGenerator {

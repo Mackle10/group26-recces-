@@ -25,6 +25,8 @@ dependencies:
   geolocator: ^9.0.2
   geocoding: ^2.1.0
   google_sign_in: ^6.1.0
+  bloc: ^8.1.4
+  meta: ^1.16.0
 
 dev_dependencies:
   flutter_test:

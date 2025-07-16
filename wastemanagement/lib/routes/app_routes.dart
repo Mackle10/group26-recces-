@@ -22,12 +22,12 @@ class AppRoutes {
     companyDashboard: (context) => const CompanyDashboard(),
     // Add other routes here
   };
-}
-// need attention
-abstract class AppRoutes {
+// O11 abstract class AppRoutes {
   static const String recyclableList = '/recyclable-list';
   static const String sellScreen = '/sell';
   
   static String getRecyclableListRoute() => recyclableList;
   static String getSellScreenRoute() => sellScreen;
+// O11 }
 }
+// need attention
