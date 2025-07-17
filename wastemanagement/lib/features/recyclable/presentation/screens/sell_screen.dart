@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:wastemanagement/core/constants/app_strings.dart';
 // Ensure that the file 'app_strings.dart' exists and contains the 'AppStrings' class with the required static string fields.
 import 'package:wastemanagement/features/recyclable/presentation/bloc/recyclable_bloc.dart';
-import 'package:wastemanagement/features/recyclable/presentation/screens/recyclable_list_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SellScreen extends StatefulWidget {

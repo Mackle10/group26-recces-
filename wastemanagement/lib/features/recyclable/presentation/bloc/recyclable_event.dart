@@ -27,22 +27,22 @@ class LoadRecyclables extends RecyclableEvent {}
 
 class AddRecyclable extends RecyclableEvent {
   final RecyclableItem item;
-  AddRecyclable(this.item);
+  const AddRecyclable(this.item);
 }
 
 class UpdateRecyclable extends RecyclableEvent {
   final RecyclableItem updatedItem;
-  UpdateRecyclable(this.updatedItem);
+  const UpdateRecyclable(this.updatedItem);
 }
 
 class DeleteRecyclable extends RecyclableEvent {
   final String itemId;
-  DeleteRecyclable(this.itemId);
+  const DeleteRecyclable(this.itemId);
 }
 
 class SearchRecyclables extends RecyclableEvent {
   final String query;
-  SearchRecyclables(this.query);
+  const SearchRecyclables(this.query);
 }
 
 // O11:E
