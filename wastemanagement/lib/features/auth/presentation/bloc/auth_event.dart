@@ -92,7 +92,7 @@ class RegisterEvent extends AuthEvent {
   final String phone;
   final String password;
 
-  RegisterEvent({
+  const RegisterEvent({
     required this.name,
     required this.email,
     required this.phone,
