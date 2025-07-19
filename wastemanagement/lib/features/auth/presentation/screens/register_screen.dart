@@ -182,13 +182,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 context.read<AuthBloc>().add(
-                                      RegisterEvent(
-                                        name: _nameController.text,
-                                        email: _emailController.text,
-                                        phone: _phoneController.text,
-                                        password: _passwordController.text,
-                                      ),
-                                    );
+                                  RegisterEvent(
+                                    name: _nameController.text,
+                                    email: _emailController.text,
+                                    phone: _phoneController.text,
+                                    password: _passwordController.text,
+                                  ),
+                                );
+                                Navigator.pushReplacementNamed(context, AppRoutes.home);
                               }
                             },
                           ),

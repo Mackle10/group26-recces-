@@ -10,10 +10,42 @@ class SchedulePickupScreen extends StatefulWidget {
 }
 
 class _SchedulePickupScreenState extends State<SchedulePickupScreen> {
+  int _selectedIndex = 0;
   late GoogleMapController mapController;
   final LatLng _center = const LatLng(-1.2921, 36.8219);
   String? _selectedWasteType;
   DateTime? _selectedDate;
+
+  Widget _buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      currentIndex: _selectedIndex,
+      onTap: (index) {
+        setState(() {
+          _selectedIndex = index;
+        });
+        // You can add navigation logic here if needed
+      },
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.history),
+          label: 'History',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings),
+          label: 'Settings',
+        ),
+      ],
+      selectedItemColor: AppColors.primary,
+      unselectedItemColor: AppColors.black.withOpacity(0.5),
+      backgroundColor: AppColors.white,
+      elevation: 8,
+      showUnselectedLabels: true,
+    );
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -39,7 +71,7 @@ class _SchedulePickupScreenState extends State<SchedulePickupScreen> {
       body: Column(
         children: [
           SizedBox(
-            height: 250,
+            height: 350,
             child: GoogleMap(
               onMapCreated: (controller) => mapController = controller,
               initialCameraPosition: CameraPosition(
@@ -56,7 +88,7 @@ class _SchedulePickupScreenState extends State<SchedulePickupScreen> {
           ),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              // padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -115,6 +147,7 @@ class _SchedulePickupScreenState extends State<SchedulePickupScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 }
