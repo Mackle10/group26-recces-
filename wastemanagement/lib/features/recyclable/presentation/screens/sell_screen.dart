@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:wastemanagement/core/constants/app_strings.dart';
 // Ensure that the file 'app_strings.dart' exists and contains the 'AppStrings' class with the required static string fields.
-import 'package:wastemanagement/features/recyclables/presentation/bloc/recyclable_bloc.dart';
+import 'package:wastemanagement/features/recyclable/presentation/bloc/recyclable_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SellScreen extends StatefulWidget {
-  const SellScreen({super.key});
+  final List<dynamic>? recyclableItems; // adjust type as needed
+  final dynamic location; // adjust type as needed
+
+  const SellScreen({
+    super.key,
+    this.recyclableItems,
+    this.location,
+  });
 
   @override
   State<SellScreen> createState() => _SellScreenState();

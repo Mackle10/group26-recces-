@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/recyclable_bloc.dart';
-import '../../../widgets/cards/recyclable_tile.dart';
-import '../../../routes/app_routes.dart';
+import '../../../../widgets/cards/recyclable_tile.dart';
+import '../../../../routes/app_routes.dart';
 
 class RecyclableListScreen extends StatelessWidget {
   const RecyclableListScreen({super.key});

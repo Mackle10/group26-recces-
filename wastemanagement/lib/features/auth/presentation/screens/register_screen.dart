@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wastemanagement/core/constants/app_colors.dart';
 import 'package:wastemanagement/core/constants/app_strings.dart';
 import 'package:wastemanagement/core/utils/validators.dart';
-import 'package:wastemanagement/core/widgets/custom_button.dart';
-import 'package:wastemanagement/core/widgets/custom_textfield.dart';
+import 'package:wastemanagement/widgets/custom_button.dart';
+import 'package:wastemanagement/widgets/custom_textfield.dart';
 import 'package:wastemanagement/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wastemanagement/routes/app_routes.dart';
 

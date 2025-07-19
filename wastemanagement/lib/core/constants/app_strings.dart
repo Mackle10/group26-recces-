@@ -1,0 +1,29 @@
+class AppStrings {
+  static const String alreadyHaveAccount = 'Already have an account?';
+  static const String appName = 'Waste Management';
+  static const String confirmPassword = 'Confirm Password';
+  static const String createAccount = 'Create an Account';
+  static const String email = 'Email';
+  static const String enterQuantity = 'Enter Quantity';
+  static const String enterPrice = 'Enter Price';
+  static const String forgotPassword = 'Forgot Password?';
+  static const String fullName = 'Full Name';
+  static const String listingCreated = 'Listing Created Successfully';
+  static const String login = 'Login';
+  static const String loginWelcome = 'Welcome Back!';
+  static const String loginSubtitle = 'Please log in to continue';
+  static const String materialType = 'Material Type';
+  static const String noAccount = "Don't have an account?";
+  static const String password = 'Password';
+  static const String pricePerUnit = 'Price per Unit';
+  static const String postListing = 'Post Listing';
+  static const String phoneNumber = 'Phone Number';
+  static const String quantity = 'Quantity';
+  static const String register = 'Register';
+  static const String registerSubtitle = 'Please fill in the details to register';
+  static const String selectMaterial = 'Select Material';
+  static const String sellMaterial = 'Sell Material';
+  static const String sellRecyclables = 'Sell Recyclables';
+  static const String validPrice = 'Please enter a valid price';
+  static const String validQuantity = 'Please enter a valid quantity';
+}

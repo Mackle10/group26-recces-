@@ -3,10 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wastemanagement/core/constants/app_colors.dart';
 import 'package:wastemanagement/core/constants/app_strings.dart';
 import 'package:wastemanagement/core/utils/validators.dart';
-import 'package:wastemanagement/core/widgets/custom_button.dart';
-import 'package:wastemanagement/core/widgets/custom_textfield.dart';
+import 'package:wastemanagement/widgets/custom_button.dart';
+import 'package:wastemanagement/widgets/custom_textfield.dart';
 import 'package:wastemanagement/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:wastemanagement/features/auth/presentation/bloc/auth_event.dart';
 import 'package:wastemanagement/routes/app_routes.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -30,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _resetPassword() async {
-    if (_emailController.text.isEmpty || !Validators.validateEmail(_emailController.text)) {
+    if (_emailController.text.isEmpty || Validators.validateEmail(_emailController.text) != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Please enter a valid email address'),
@@ -204,6 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(
                           color: AppColors.black.withOpacity(0.6),
                         ),
+                      ),
                       TextButton(
                         onPressed: () => Navigator.pushNamed(
                             context, AppRoutes.register),

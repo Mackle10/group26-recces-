@@ -1,30 +1,29 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:wastemanagement/features/auth/data/models/user_model.dart';
-import 'package:wastemanagement/features/company/data/models/company_model.dart';
-import 'package:wastemanagement/features/pickup/data/models/pickup_model.dart';
-import 'package:wastemanagement/features/recyclables/data/models/recyclable_model.dart';
+import 'package:wastemanagement/data/models/user_model.dart';
+import 'package:wastemanagement/data/models/company_model.dart';
+import 'package:wastemanagement/data/models/pickup_model.dart';
+import 'package:wastemanagement/data/models/recycle_model.dart';
 
 abstract class FirebaseDataSource {
   // User Operations
   Future<void> createUser(UserModel user);
   Future<UserModel> getUser(String userId);
-  
+
   // Company Operations
   Future<void> createCompany(CompanyModel company);
   Future<CompanyModel> getCompany(String companyId);
-  
+
   // Pickup Operations
   Future<String> schedulePickup(PickupModel pickup);
   Future<void> updatePickupStatus(String pickupId, String status);
-  
+
   // Recyclable Operations
   Future<String> postRecyclable(RecyclableModel recyclable);
   Future<void> updateRecyclableStatus(String recyclableId, String status);
 }
 
 class FirebaseDataSourceImpl implements FirebaseDataSource {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   @override
   Future<void> createUser(UserModel user) async {
     await _firestore.collection('users').doc(user.id).set(user.toMap());

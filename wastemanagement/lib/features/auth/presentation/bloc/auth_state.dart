@@ -1,8 +1,4 @@
 part of 'auth_bloc.dart';
-import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
-
 
 @immutable
 sealed class AuthState extends Equatable {

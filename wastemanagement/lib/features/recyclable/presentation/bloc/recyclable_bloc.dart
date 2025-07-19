@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:wastemanagement/features/recyclables/domain/entities/recyclable_item.dart';
-import 'package:wastemanagement/features/recyclables/domain/repositories/recyclable_repository.dart';
+import 'package:wastemanagement/features/recyclable/domain/entities/recyclable_item.dart';
+import 'package:wastemanagement/features/recyclable/domain/repositories/recyclable_repository.dart';
 
 part 'recyclable_event.dart';
 part 'recyclable_state.dart';
