@@ -67,6 +67,8 @@ A Flutter-based mobile application that revolutionizes waste collection and recy
 
 ## Screenshots
 ![image alt](https://github.com/Mackle10/group26-recces-/blob/2a8b9b3ac99da4113c6732f51f883ef95549684c/Screenshot%202025-07-19%20091409.jpg)
+![image alt](https://github.com/Mackle10/group26-recces-/blob/c6b8319c367cd0e7f154156a4cc65317cc4b43fb/Screenshot%202025-07-19%20100009.jpg)
+![image alt](https://github.com/Mackle10/group26-recces-/blob/c6b8319c367cd0e7f154156a4cc65317cc4b43fb/Screenshot%202025-07-19%20100101.jpg)
 ![Screenshot 2025-07-19 091610](https://github.com/user-attachments/assets/9c0ae3b6-a95c-462e-81f6-32e2f1aca8d0)
 ![Screenshot 2025-07-19 091705](https://github.com/user-attachments/assets/ddfbf082-8846-4353-9e59-192716e71456)
 ![Screenshot 2025-07-19 100009](https://github.com/user-attachments/assets/01d0e1ac-10af-474b-859d-eeb7bb6706a1)
