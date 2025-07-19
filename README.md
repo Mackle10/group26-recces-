@@ -66,7 +66,10 @@ A Flutter-based mobile application that revolutionizes waste collection and recy
 
 
 ## Screenshots
-(Include app screenshots here when available)
+![image alt]()
+![image alt]()
+![image alt]()
+![image alt]()
 
 ## Future Enhancements
 - AI-powered waste sorting suggestions
