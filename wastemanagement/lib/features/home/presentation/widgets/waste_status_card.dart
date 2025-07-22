@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class WasteStatsCard extends StatelessWidget {
-  const WasteStatsCard({super.key});
+class WasteStatusCard extends StatelessWidget {
+  const WasteStatusCard({super.key});
 
   @override
   Widget build(BuildContext context) {

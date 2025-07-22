@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wastemanagement/core/constants/app_colors.dart';
 import 'package:wastemanagement/core/constants/app_strings.dart';
-import 'package:wastemanagement/widgets/custom_button.dart';
 import 'package:wastemanagement/features/map/presentation/screens/map_screen.dart';
 import 'package:wastemanagement/features/pickup/presentation/screens/schedule_pickup_screen.dart';
-import 'package:wastemanagement/features/recyclable/presentation/screens/recyclables_marketplace.dart';
 
 class HomeScreen extends StatefulWidget {
 const HomeScreen({super.key});
@@ -111,11 +109,52 @@ Widget build(BuildContext context) {
                   icon: Icons.calendar_today,
                   title: 'Schedule Pickup',
                   color: AppColors.primary,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SchedulePickupScreen(),
+                  onTap: () async {
+                    final streetController = TextEditingController();
+                    final plotController = TextEditingController();
+                    await showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Pickup Location'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextField(
+                              controller: streetController,
+                              decoration: const InputDecoration(
+                                labelText: 'Street Name',
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            TextField(
+                              controller: plotController,
+                              decoration: const InputDecoration(
+                                labelText: 'Plot Number',
+                              ),
+                            ),
+                          ],
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Cancel'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SchedulePickupScreen(
+                                    streetName: streetController.text,
+                                    plotNumber: plotController.text,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Text('Continue'),
+                          ),
+                        ],
                       ),
                     );
                   },

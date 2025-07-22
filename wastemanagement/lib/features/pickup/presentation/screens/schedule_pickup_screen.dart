@@ -3,7 +3,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wastemanagement/core/constants/app_colors.dart';
 
 class SchedulePickupScreen extends StatefulWidget {
-  const SchedulePickupScreen({super.key});
+  final String? streetName;
+  final String? plotNumber;
+  const SchedulePickupScreen({super.key, this.streetName, this.plotNumber});
 
   @override
   State<SchedulePickupScreen> createState() => _SchedulePickupScreenState();
@@ -38,6 +40,19 @@ class _SchedulePickupScreenState extends State<SchedulePickupScreen> {
       ),
       body: Column(
         children: [
+          if (widget.streetName != null || widget.plotNumber != null)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (widget.streetName != null)
+                    Text('Street Name: ' + widget.streetName!),
+                  if (widget.plotNumber != null)
+                    Text('Plot Number: ' + widget.plotNumber!),
+                ],
+              ),
+            ),
           SizedBox(
             height: 250,
             child: GoogleMap(

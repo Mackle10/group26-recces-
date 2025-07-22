@@ -54,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               context: context,
               builder: (context) => AlertDialog(
                 title: const Text('Registration Successful'),
-                content: Text('Welcome, ' + userName + '! Your registration is complete.'),
+                content: Text('Welcome, $userName! Your registration is complete.'),
                 actions: [
                   TextButton(
                     onPressed: () {

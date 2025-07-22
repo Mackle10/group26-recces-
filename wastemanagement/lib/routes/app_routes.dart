@@ -17,13 +17,13 @@ class AppRoutes {
   static const payment = '/payment';
 
   static final routes = {
-    login: (context) => const LoginScreen(),
-    register: (context) => const RegisterScreen(),
-    home: (context) => const HomeScreen(),
-    schedulePickup: (context) => const SchedulePickupScreen(),
-    companyDashboard: (context) => const CompanyDashboard(),
-    recyclablesMarketplace: (context) => const RecyclablesMarketplace(),
-    payment: (context) => const PaymentScreen(),
+    '/login': (context) => const LoginScreen(),
+    '/register': (context) => const RegisterScreen(),
+    '/home': (context) => const HomeScreen(),
+    '/schedule-pickup': (context) => const SchedulePickupScreen(),
+    '/company-dashboard': (context) => const CompanyDashboard(),
+    '/recyclables': (context) => const RecyclablesMarketplace(),
+    '/payment': (context) => const PaymentScreen(),
     // Add other routes here
   };
 // O11 abstract class AppRoutes {
