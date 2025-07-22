@@ -3,6 +3,8 @@ import 'package:wastemanagement/features/auth/presentation/screens/register_scre
 import 'package:wastemanagement/features/company/company_dashboard.dart';
 import 'package:wastemanagement/features/home/presentation/screens/home_screen.dart';
 import 'package:wastemanagement/features/pickup/presentation/screens/schedule_pickup_screen.dart';
+import 'package:wastemanagement/features/recyclable/presentation/screens/recyclables_marketplace.dart';
+import 'package:wastemanagement/features/payment/presentation/screens/payment_screen.dart';
 
 class AppRoutes {
   static const initial = '/';
@@ -20,6 +22,8 @@ class AppRoutes {
     home: (context) => const HomeScreen(),
     schedulePickup: (context) => const SchedulePickupScreen(),
     companyDashboard: (context) => const CompanyDashboard(),
+    recyclablesMarketplace: (context) => const RecyclablesMarketplace(),
+    payment: (context) => const PaymentScreen(),
     // Add other routes here
   };
 // O11 abstract class AppRoutes {

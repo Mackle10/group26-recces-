@@ -49,7 +49,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             );
           } else if (state is Authenticated) {
-            Navigator.pushReplacementNamed(context, AppRoutes.home);
+            final userName = _nameController.text;
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Registration Successful'),
+                content: Text('Welcome, ' + userName + '! Your registration is complete.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.pushReplacementNamed(context, AppRoutes.home);
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+            );
           }
         },
         builder: (context, state) {

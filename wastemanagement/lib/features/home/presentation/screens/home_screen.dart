@@ -137,6 +137,17 @@ Widget build(BuildContext context) {
                   },
                 ),
               ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildActionCard(
+                  icon: Icons.payment,
+                  title: 'Payment',
+                  color: AppColors.primary,
+                  onTap: () {
+                    Navigator.pushNamed(context, '/payment');
+                  },
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 30),
@@ -178,12 +189,7 @@ Widget build(BuildContext context) {
             ),
             child: InkWell(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const RecyclablesMarketplace(),
-                  ),
-                );
+                Navigator.pushNamed(context, '/recyclables');
               },
               child: Row(
                 children: [
