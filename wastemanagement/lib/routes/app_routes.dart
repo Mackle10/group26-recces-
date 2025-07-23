@@ -2,12 +2,14 @@ import 'package:wastemanagement/features/auth/presentation/screens/login_screen.
 import 'package:wastemanagement/features/auth/presentation/screens/register_screen.dart';
 import 'package:wastemanagement/features/company/company_dashboard.dart';
 import 'package:wastemanagement/features/home/presentation/screens/home_screen.dart';
+import 'package:wastemanagement/features/home/presentation/screens/plain_intro_screen.dart';
 import 'package:wastemanagement/features/pickup/presentation/screens/schedule_pickup_screen.dart';
 import 'package:wastemanagement/features/recyclable/presentation/screens/recyclables_marketplace.dart';
 import 'package:wastemanagement/features/payment/presentation/screens/payment_screen.dart';
 
 class AppRoutes {
   static const initial = '/';
+  static const intro = '/';
   static const login = '/login';
   static const register = '/register';
   static const home = '/home';
@@ -17,6 +19,7 @@ class AppRoutes {
   static const payment = '/payment';
 
   static final routes = {
+    '/': (context) => const PlainIntroScreen(),
     '/login': (context) => const LoginScreen(),
     '/register': (context) => const RegisterScreen(),
     '/home': (context) => const HomeScreen(),

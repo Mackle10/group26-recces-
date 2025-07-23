@@ -24,6 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  String _selectedRole = 'user'; // default
 
   @override
   void dispose() {
@@ -59,7 +60,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      Navigator.pushReplacementNamed(context, AppRoutes.home);
+                      if (state.role == 'company') {
+                        Navigator.pushReplacementNamed(context, AppRoutes.companyDashboard);
+                      } else {
+                        Navigator.pushReplacementNamed(context, AppRoutes.home);
+                      }
                     },
                     child: const Text('OK'),
                   ),
@@ -189,6 +194,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             fillColor: AppColors.lightGreen2.withOpacity(0.2),
                           ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: RadioListTile<String>(
+                                  title: Text('User'),
+                                  value: 'user',
+                                  groupValue: _selectedRole,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedRole = value!;
+                                    });
+                                  },
+                                ),
+                              ),
+                              Expanded(
+                                child: RadioListTile<String>(
+                                  title: Text('Company'),
+                                  value: 'company',
+                                  groupValue: _selectedRole,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedRole = value!;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: 24),
                           CustomButton(
                             text: AppStrings.register,
@@ -203,6 +237,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         email: _emailController.text,
                                         phone: _phoneController.text,
                                         password: _passwordController.text,
+                                        role: _selectedRole,
                                       ),
                                     );
                               }
