@@ -75,9 +75,6 @@ class FirebaseAuthRepository implements AuthRepository {
     );
     await userCredential.user?.updateDisplayName(fullName);
     await userCredential.user?.reload();
-<<<<<<< HEAD
-    return _firebaseAuth.currentUser;
-=======
     // Write user to Firestore with role
     final user = userCredential.user;
     if (user != null) {
@@ -92,7 +89,7 @@ class FirebaseAuthRepository implements AuthRepository {
       );
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set(userModel.toMap());
     }
->>>>>>> 7e63f79094f8d27b1e9b2bb4245ec7215cbd23af
+    return _firebaseAuth.currentUser;
   }
 
   @override
