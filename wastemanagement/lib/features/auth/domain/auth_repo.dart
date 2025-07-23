@@ -10,7 +10,7 @@ abstract class AuthRepository {
     required String password,
   });
 
-  Future<void> createUserWithEmailAndPassword({
+  Future<User?> createUserWithEmailAndPassword({
     required String email,
     required String password,
     required String fullName,
@@ -59,7 +59,7 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> createUserWithEmailAndPassword({
+  Future<User?> createUserWithEmailAndPassword({
     required String email,
     required String password,
     required String fullName,
@@ -69,9 +69,9 @@ class FirebaseAuthRepository implements AuthRepository {
       email: email,
       password: password,
     );
-
     await userCredential.user?.updateDisplayName(fullName);
     await userCredential.user?.reload();
+    return _firebaseAuth.currentUser;
   }
 
   @override

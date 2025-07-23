@@ -193,13 +193,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      await authRepository.createUserWithEmailAndPassword(
+      final user = await authRepository.createUserWithEmailAndPassword(
         email: event.email,
         password: event.password,
         fullName: event.name,
         phoneNumber: event.phone,
       );
-      add(EmailVerificationSent());
+      emit(Authenticated(user!));
     } on FirebaseAuthException catch (e) {
       emit(AuthError(_mapFirebaseError(e)));
       emit(Unauthenticated());
