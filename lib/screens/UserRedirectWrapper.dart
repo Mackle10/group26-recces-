@@ -42,7 +42,10 @@ class UserRedirectWrapper extends StatelessWidget {
 
             // Delay navigation to after build completes
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (userType == 'Client') {
+              print('UserRedirectWrapper: userType = ' + userType);
+              print('UserRedirectWrapper: userData = ' + userData.toString());
+              if (userType == 'Client' || userType == 'Home') {
+                print('Redirecting to /homeDashboard with args: ' + userData.toString());
                 Navigator.pushReplacementNamed(context, '/homeDashboard', 
                 arguments: {
                   'name': userData['name'],
@@ -52,6 +55,12 @@ class UserRedirectWrapper extends StatelessWidget {
                 }
                 );
               } else if (userType == 'Company') {
+                print('Redirecting to /companyDashboard with args: ' + {
+                  'name': name,
+                  'lastStatus': lastStatus,
+                  'lastDate': lastDate,
+                  'userType': userType,
+                }.toString());
                 Navigator.pushReplacementNamed(context, '/companyDashboard', arguments: {
                   'name': name,
                   'lastStatus': lastStatus,
