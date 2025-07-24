@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wastemanagement/core/constants/app_colors.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wastemanagement/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:wastemanagement/routes/app_routes.dart';
 
 class CompanyDashboard extends StatefulWidget {
   const CompanyDashboard({super.key});
@@ -11,8 +15,8 @@ class CompanyDashboard extends StatefulWidget {
 
 class _CompanyDashboardState extends State<CompanyDashboard> {
   late GoogleMapController mapController;
-  final LatLng _companyLocation = const LatLng(-1.2921, 36.8219);
-  final LatLng _customerLocation = const LatLng(-1.3000, 36.8300);
+  final LatLng _companyLocation = const LatLng(0.2921, 36.8219);
+  final LatLng _customerLocation = const LatLng(0.3000, 36.8300);
   Set<Marker> _markers = {};
   Set<Polyline> _polylines = {};
 
