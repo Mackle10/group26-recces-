@@ -185,12 +185,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         email: event.email,
         password: event.password,
       );
-
       final user = await authRepository.getCurrentUser();
       // Fetch role from Firestore
       final userDoc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
       final role = userDoc.data()?['role'] ?? 'user';
-      emit(Authenticated(user, role));
+      emit(Authenticated(user!, role));
     } on FirebaseAuthException catch (e) {
       emit(AuthError(_mapFirebaseError(e)));
       emit(Unauthenticated());
@@ -206,19 +205,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      await authRepository.createUserWithEmailAndPassword(
+      final user = await authRepository.createUserWithEmailAndPassword(
         email: event.email,
         password: event.password,
         fullName: event.name,
         phoneNumber: event.phone,
         role: event.role, // pass role
       );
-      final user = await authRepository.getCurrentUser();
       // Fetch role from Firestore
       final userDoc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
       final role = userDoc.data()?['role'] ?? 'user';
-      emit(Authenticated(user!, role));
-      add(EmailVerificationSent());
+      emit(Authenticated(user, role));
     } on FirebaseAuthException catch (e) {
       emit(AuthError(_mapFirebaseError(e)));
       emit(Unauthenticated());
