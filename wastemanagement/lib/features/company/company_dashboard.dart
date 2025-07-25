@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wastemanagement/core/constants/app_colors.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wastemanagement/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:wastemanagement/routes/app_routes.dart';
 
 class CompanyDashboard extends StatefulWidget {
   const CompanyDashboard({super.key});
@@ -15,8 +11,14 @@ class CompanyDashboard extends StatefulWidget {
 
 class _CompanyDashboardState extends State<CompanyDashboard> {
   late GoogleMapController mapController;
-  final LatLng _companyLocation = const LatLng(0.2921, 36.8219);
-  final LatLng _customerLocation = const LatLng(0.3000, 36.8300);
+  final latlngs = [
+    [2.2921, 36.8219],
+    [2.21, 37.8219],
+    [2.9, 36.0219]
+  ];
+
+  final LatLng _companyLocation = const LatLng(2.2921, 36.8219);
+  final LatLng _customerLocation = const LatLng(2.3000, 36.8300);
   Set<Marker> _markers = {};
   Set<Polyline> _polylines = {};
 
@@ -35,6 +37,16 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
         position: _customerLocation,
         infoWindow: const InfoWindow(title: 'Customer Pickup'),
       ),
+      ...(latlngs.map((latlng) {
+        final lat = latlng[0];
+        final lng = latlng[1];
+        return Marker(
+          markerId: MarkerId('recycle_${lat}_${lng}'),
+          position: LatLng(lat, lng),
+          infoWindow: InfoWindow(title: 'Recycle Point'),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        );
+      }).toList()),
     };
 
     _polylines = {

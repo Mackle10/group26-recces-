@@ -22,7 +22,11 @@ class AppRoutes {
     '/': (context) => const PlainIntroScreen(),
     '/login': (context) => const LoginScreen(),
     '/register': (context) => const RegisterScreen(),
-    '/home': (context) => const HomeScreen(),
+    '/home': (context) => HomeScreen(
+          toggleTheme: (isDarkMode) {
+            // Implement the logic to toggle the theme here
+          },
+        ),
     '/schedule-pickup': (context) => const SchedulePickupScreen(),
     '/company-dashboard': (context) => const CompanyDashboard(),
     '/recyclables': (context) => const RecyclablesMarketplace(),

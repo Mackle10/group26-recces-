@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wastemanagement/core/constants/app_colors.dart';
+import 'package:wastemanagement/data/models/recycle_model.dart';
+import 'package:wastemanagement/data/datasources/remote/firebase_datasource.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SchedulePickupScreen extends StatefulWidget {
   final String? streetName;
@@ -47,9 +51,9 @@ class _SchedulePickupScreenState extends State<SchedulePickupScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (widget.streetName != null)
-                    Text('Street Name: ' + widget.streetName!),
+                    Text('Street Name: ${widget.streetName!}'),
                   if (widget.plotNumber != null)
-                    Text('Plot Number: ' + widget.plotNumber!),
+                    Text('Plot Number: ${widget.plotNumber!}'),
                 ],
               ),
             ),
@@ -118,8 +122,19 @@ class _SchedulePickupScreenState extends State<SchedulePickupScreen> {
                     ),
                     onPressed: _selectedDate == null || _selectedWasteType == null
                         ? null
-                        : () {
+                        : () async {
                             // Handle pickup scheduling
+                            await (FirebaseDataSourceImpl()).postRecyclable(RecyclableModel(
+                              userId: FirebaseAuth.instance.currentUser!.uid,
+                              type: _selectedWasteType!,
+                              quantity: 1,
+                              price: 100,
+                              status: 'pending',
+                              // createdAt: FieldValue.serverTimestamp(),
+                              createdAt: DateTime.now(),
+                              purchasedAt: _selectedDate,
+                              purchasedBy: FirebaseAuth.instance.currentUser!.uid,
+                            ));
                             Navigator.pop(context);
                           },
                     child: const Text('Confirm Pickup'),

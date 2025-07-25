@@ -82,7 +82,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               );
             } else if (state is Authenticated) {
-              Navigator.pushReplacementNamed(context, AppRoutes.home);
+              final role = state.role;
+              Navigator.pushReplacementNamed(context, role == "company" ? AppRoutes.companyDashboard : AppRoutes.home);
             }
           },
           builder: (context, state) {
@@ -133,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Log in to continue your eco journey',
+                      'Log in to continue your eco journeyXXX',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white70,
@@ -155,6 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Column(
                             children: [
                               CustomTextField(
+                                initialValue: "<Email>",
                                 controller: _emailController,
                                 labelText: AppStrings.email,
                                 prefixIcon: Icons.email_outlined,
@@ -165,6 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               const SizedBox(height: 18),
                               CustomTextField(
+                                initialValue: "<Password>",
                                 controller: _passwordController,
                                 labelText: AppStrings.password,
                                 prefixIcon: Icons.lock_outlined,
