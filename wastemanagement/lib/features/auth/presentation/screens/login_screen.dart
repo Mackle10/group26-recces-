@@ -156,7 +156,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Column(
                             children: [
                               CustomTextField(
-                                initialValue: "<Email>",
                                 controller: _emailController,
                                 labelText: AppStrings.email,
                                 prefixIcon: Icons.email_outlined,
@@ -167,7 +166,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               const SizedBox(height: 18),
                               CustomTextField(
-                                initialValue: "<Password>",
                                 controller: _passwordController,
                                 labelText: AppStrings.password,
                                 prefixIcon: Icons.lock_outlined,
