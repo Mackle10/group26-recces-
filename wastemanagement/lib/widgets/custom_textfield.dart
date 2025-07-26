@@ -10,6 +10,7 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final Color iconColor;
   final Color fillColor;
+  final String? initialValue;
 
   const CustomTextField({
     super.key,
@@ -22,12 +23,14 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     required this.iconColor,
     required this.fillColor,
+    this.initialValue,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: controller,
+      // controller: controller,
+      initialValue: initialValue,
       validator: validator,
       keyboardType: keyboardType,
       obscureText: obscureText,

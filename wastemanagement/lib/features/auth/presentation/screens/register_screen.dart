@@ -24,6 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  String _selectedRole = 'user'; // default
 
   @override
   void dispose() {
@@ -49,7 +50,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             );
           } else if (state is Authenticated) {
-            Navigator.pushReplacementNamed(context, AppRoutes.home);
+            final userName = _nameController.text;
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Registration Successful'),
+                content: Text('Welcome, $userName! Your registration is complete.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      if (state.role == 'company') {
+                        Navigator.pushReplacementNamed(context, AppRoutes.companyDashboard);
+                      } else {
+                        Navigator.pushReplacementNamed(context, AppRoutes.home);
+                      }
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+            );
           }
         },
         builder: (context, state) {
@@ -173,6 +194,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             fillColor: AppColors.lightGreen2.withOpacity(0.2),
                           ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: RadioListTile<String>(
+                                  title: Text('User'),
+                                  value: 'user',
+                                  groupValue: _selectedRole,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedRole = value!;
+                                    });
+                                  },
+                                ),
+                              ),
+                              Expanded(
+                                child: RadioListTile<String>(
+                                  title: Text('Company'),
+                                  value: 'company',
+                                  groupValue: _selectedRole,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedRole = value!;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: 24),
                           CustomButton(
                             text: AppStrings.register,
@@ -182,14 +232,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 context.read<AuthBloc>().add(
-                                  RegisterEvent(
-                                    name: _nameController.text,
-                                    email: _emailController.text,
-                                    phone: _phoneController.text,
-                                    password: _passwordController.text,
-                                  ),
-                                );
-                                Navigator.pushReplacementNamed(context, AppRoutes.home);
+                                      RegisterEvent(
+                                        name: _nameController.text,
+                                        email: _emailController.text,
+                                        phone: _phoneController.text,
+                                        password: _passwordController.text,
+                                        role: _selectedRole,
+                                      ),
+                                    );
                               }
                             },
                           ),

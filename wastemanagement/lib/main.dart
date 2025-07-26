@@ -10,10 +10,12 @@ import 'package:wastemanagement/routes/app_routes.dart';
 import 'package:wastemanagement/routes/route_generator.dart';
 import 'package:wastemanagement/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wastemanagement/features/auth/domain/auth_repo.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // await Firebase.initializeApp();
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -39,7 +41,7 @@ class MyApp extends StatelessWidget {
           ),
           scaffoldBackgroundColor: AppColors.background,
         ),
-        initialRoute: AppRoutes.login,
+        initialRoute: AppRoutes.intro,
         routes: AppRoutes.routes,
         onGenerateRoute: RouteGenerator.generateRoute,
         debugShowCheckedModeBanner: false,

@@ -62,166 +62,202 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppColors.secondary,
-              ),
-            );
-          } else if (state is Authenticated) {
-            Navigator.pushReplacementNamed(context, AppRoutes.home);
-          }
-        },
-        builder: (context, state) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                // Header Section
-                Container(
-                  padding: const EdgeInsets.only(top: 60, bottom: 40),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.recycling,
-                        size: 80,
-                        color: AppColors.primary,
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        AppStrings.loginWelcome,
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        AppStrings.loginSubtitle,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: AppColors.black.withOpacity(0.6),
-                        ),
-                      ),
-                    ],
-                  ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFa8e063), Color(0xFF56ab2f)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: AppColors.secondary,
                 ),
-                
-                // Form Section
-                Card(
-                  margin: EdgeInsets.zero,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  color: AppColors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          CustomTextField(
-                            controller: _emailController,
-                            labelText: AppStrings.email,
-                            prefixIcon: Icons.email_outlined,
-                            iconColor: AppColors.primary,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: Validators.validateEmail,
-                            fillColor: AppColors.lightGreen2.withOpacity(0.2),
+              );
+            } else if (state is Authenticated) {
+              final role = state.role;
+              Navigator.pushReplacementNamed(context, role == "company" ? AppRoutes.companyDashboard : AppRoutes.home);
+            }
+          },
+          builder: (context, state) {
+            return Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Cute Illustration/Icon
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.green.withOpacity(0.2),
+                            blurRadius: 30,
+                            spreadRadius: 5,
                           ),
-                          const SizedBox(height: 16),
-                          CustomTextField(
-                            controller: _passwordController,
-                            labelText: AppStrings.password,
-                            prefixIcon: Icons.lock_outlined,
-                            iconColor: AppColors.primary,
-                            obscureText: _obscurePassword,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword 
-                                    ? Icons.visibility_off 
-                                    : Icons.visibility,
-                                color: AppColors.primary,
-                              ),
-                              onPressed: () => setState(
-                                  () => _obscurePassword = !_obscurePassword),
-                            ),
-                            validator: Validators.validatePassword,
-                            fillColor: AppColors.lightGreen2.withOpacity(0.2),
-                          ),
-                          const SizedBox(height: 8),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: state is AuthLoading ? null : _resetPassword,
-                              child: Text(
-                                AppStrings.forgotPassword,
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          CustomButton(
-                            text: AppStrings.login,
-                            isLoading: state is AuthLoading,
-                            backgroundColor: AppColors.primary,
-                            textColor: AppColors.white,
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                context.read<AuthBloc>().add(
-                                      LoginEvent(
-                                        email: _emailController.text,
-                                        password: _passwordController.text,
-                                      ),
-                                    );
-                              }
-                            },
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 54,
+                        backgroundColor: Colors.white,
+                        child: Icon(
+                          Icons.recycling,
+                          size: 64,
+                          color: Color(0xFF56ab2f),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Welcome Back! 👋',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 1.2,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black26,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                ),
-                
-                // Footer Section
-                Padding(
-                  padding: const EdgeInsets.only(top: 24),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        AppStrings.noAccount,
-                        style: TextStyle(
-                          color: AppColors.black.withOpacity(0.6),
-                        ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Log in to continue your eco journey',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white70,
+                        fontWeight: FontWeight.w500,
                       ),
-                      TextButton(
-                        onPressed: () => Navigator.pushNamed(
-                            context, AppRoutes.register),
-                        child: Text(
-                          AppStrings.register,
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
+                    ),
+                    const SizedBox(height: 32),
+                    // Login Form Card
+                    Card(
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      color: Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.all(28),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              CustomTextField(
+                                controller: _emailController,
+                                initialValue: "company5@gmail.com",
+                                labelText: AppStrings.email,
+                                prefixIcon: Icons.email_outlined,
+                                iconColor: Color(0xFF56ab2f),
+                                keyboardType: TextInputType.emailAddress,
+                                validator: Validators.validateEmail,
+                                fillColor: AppColors.lightGreen2.withOpacity(0.15),
+                              ),
+                              const SizedBox(height: 18),
+                              CustomTextField(
+                                controller: _passwordController,
+                                initialValue: "5555555",
+                                labelText: AppStrings.password,
+                                prefixIcon: Icons.lock_outlined,
+                                iconColor: Color(0xFF56ab2f),
+                                obscureText: _obscurePassword,
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    color: Color(0xFF56ab2f),
+                                  ),
+                                  onPressed: () => setState(
+                                      () => _obscurePassword = !_obscurePassword),
+                                ),
+                                validator: Validators.validatePassword,
+                                fillColor: AppColors.lightGreen2.withOpacity(0.15),
+                              ),
+                              const SizedBox(height: 8),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: state is AuthLoading ? null : _resetPassword,
+                                  child: Text(
+                                    AppStrings.forgotPassword,
+                                    style: TextStyle(
+                                      color: Color(0xFF56ab2f),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              CustomButton(
+                                text: AppStrings.login,
+                                isLoading: state is AuthLoading,
+                                backgroundColor: Color(0xFF56ab2f),
+                                textColor: Colors.white,
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    context.read<AuthBloc>().add(
+                                          LoginEvent(
+                                            // email: _emailController.text,
+                                            // password: _passwordController.text,
+                                            email: "company5@gmail.com",
+                                            password: "5555555",
+                                          ),
+                                        );
+                                  }
+                                },
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    // Footer Section
+                    Padding(
+                      padding: const EdgeInsets.only(top: 28),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            AppStrings.noAccount,
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pushNamed(
+                                context, AppRoutes.register),
+                            child: Text(
+                              AppStrings.register,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

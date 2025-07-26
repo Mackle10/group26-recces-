@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:wastemanagement/data/models/user_model.dart';
 
 abstract class AuthRepository {
   Stream<User?> get user;
@@ -10,11 +12,12 @@ abstract class AuthRepository {
     required String password,
   });
 
-  Future<void> createUserWithEmailAndPassword({
+  Future<User?> createUserWithEmailAndPassword({
     required String email,
     required String password,
     required String fullName,
     required String phoneNumber,
+    required String role,
   });
 
   Future<void> sendPasswordResetEmail(String email);
@@ -59,19 +62,34 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> createUserWithEmailAndPassword({
+  Future<User?> createUserWithEmailAndPassword({
     required String email,
     required String password,
     required String fullName,
     required String phoneNumber,
+    required String role,
   }) async {
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
-
     await userCredential.user?.updateDisplayName(fullName);
     await userCredential.user?.reload();
+    // Write user to Firestore with role
+    final user = userCredential.user;
+    if (user != null) {
+      final userModel = UserModel(
+        id: user.uid,
+        name: fullName,
+        email: email,
+        phone: phoneNumber,
+        address: '', // You may want to collect this in the form
+        role: role,
+        createdAt: DateTime.now(),
+      );
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set(userModel.toMap());
+    }
+    return _firebaseAuth.currentUser;
   }
 
   @override

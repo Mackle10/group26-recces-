@@ -63,6 +63,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '327523805214',
     projectId: 'wastemanagement2-4dda3',
     storageBucket: 'wastemanagement2-4dda3.firebasestorage.app',
+    iosClientId: '327523805214-4dbdi9s74no61hscgp1qj43bog4erhdk.apps.googleusercontent.com',
     iosBundleId: 'com.example.wastemanagement',
   );
 
@@ -72,6 +73,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '327523805214',
     projectId: 'wastemanagement2-4dda3',
     storageBucket: 'wastemanagement2-4dda3.firebasestorage.app',
+    iosClientId: '327523805214-4dbdi9s74no61hscgp1qj43bog4erhdk.apps.googleusercontent.com',
     iosBundleId: 'com.example.wastemanagement',
   );
 
@@ -83,4 +85,5 @@ class DefaultFirebaseOptions {
     authDomain: 'wastemanagement2-4dda3.firebaseapp.com',
     storageBucket: 'wastemanagement2-4dda3.firebasestorage.app',
   );
+
 }

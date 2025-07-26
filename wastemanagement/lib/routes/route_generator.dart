@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import '../features/recyclable/presentation/screens/recyclable_list_screen.dart';
 import '../features/recyclable/presentation/screens/sell_screen.dart';
 import 'app_routes.dart';
+import '../features/home/presentation/screens/plain_intro_screen.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case '/':
+        return MaterialPageRoute(
+          builder: (_) => const PlainIntroScreen(),
+          settings: settings,
+        );
       case AppRoutes.recyclableList:
         return MaterialPageRoute(
           builder: (_) => const RecyclableListScreen(),

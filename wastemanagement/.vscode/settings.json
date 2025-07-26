@@ -1,3 +1,6 @@
 {
-    "debug.enableStatusBarColor": false
+    "debug.enableStatusBarColor": false,
+    "cSpell.words": [
+        "wastemanagement"
+    ]
 }

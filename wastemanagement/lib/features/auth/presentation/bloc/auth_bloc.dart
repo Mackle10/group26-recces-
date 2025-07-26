@@ -5,6 +5,9 @@ import 'package:wastemanagement/features/auth/domain/auth_repo.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:wastemanagement/data/models/user_model.dart';
+
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -41,7 +44,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     if (event.user != null) {
       if (event.user!.emailVerified) {
-        emit(Authenticated(event.user!));
+        // Fetch role from Firestore
+        final userDoc = await FirebaseFirestore.instance.collection('users').doc(event.user!.uid).get();
+        final role = userDoc.data()?['role'] ?? 'user';
+        emit(Authenticated(event.user!, role));
       } else {
         emit(UnverifiedEmail(event.user!));
       }
@@ -76,6 +82,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     try {
       await authRepository.createUserWithEmailAndPassword(
+        role: event.role,
         email: event.email,
         password: event.password,
         fullName: event.fullName,
@@ -153,7 +160,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final user = await authRepository.getCurrentUser();
       if (user != null && user.emailVerified) {
-        emit(Authenticated(user));
+        // Fetch role from Firestore
+        final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        final role = userDoc.data()?['role'] ?? 'user';
+        emit(Authenticated(user, role));
       } else if (user != null) {
         emit(UnverifiedEmail(user));
       } else {
@@ -166,6 +176,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   // New event handlers for O11 events
   Future<void> _handleLoginEvent(
+    
     LoginEvent event,
     Emitter<AuthState> emit,
   ) async {
@@ -175,9 +186,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         email: event.email,
         password: event.password,
       );
-
       final user = await authRepository.getCurrentUser();
-      emit(Authenticated(user!));
+      // Fetch role from Firestore
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+      final role = userDoc.data()?['role'] ?? 'user';
+      emit(Authenticated(user!, role));
     } on FirebaseAuthException catch (e) {
       emit(AuthError(_mapFirebaseError(e)));
       emit(Unauthenticated());
@@ -193,13 +206,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      await authRepository.createUserWithEmailAndPassword(
+      final user = await authRepository.createUserWithEmailAndPassword(
         email: event.email,
         password: event.password,
         fullName: event.name,
         phoneNumber: event.phone,
+        role: event.role, // pass role
       );
-      add(EmailVerificationSent());
+      // Fetch role from Firestore
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+      final role = userDoc.data()?['role'] ?? 'user';
+      emit(Authenticated(user, role));
     } on FirebaseAuthException catch (e) {
       emit(AuthError(_mapFirebaseError(e)));
       emit(Unauthenticated());
