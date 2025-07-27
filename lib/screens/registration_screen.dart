@@ -63,6 +63,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> with SingleTick
             'userType': _userType,
             'lastStatus': 'Pending',
             'lastDate': DateTime.now().toIso8601String(),
+            if (_userType == 'Company') 'isApproved': true,
           });
 
           if (!mounted) return;

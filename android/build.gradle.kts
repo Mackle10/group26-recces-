@@ -4,10 +4,9 @@ buildscript {
         mavenCentral()
     }
     dependencies {
+        classpath("com.android.tools.build:gradle:8.3.1") 
         classpath("com.google.gms:google-services:4.3.15")
     }
-    classpath 'com.google.gms:google-services:4.3.15' // add under buildscript > dependencies
-
 }
 
 allprojects {
@@ -24,6 +23,7 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
+
 subprojects {
     project.evaluationDependsOn(":app")
 }
