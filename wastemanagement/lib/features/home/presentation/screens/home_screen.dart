@@ -171,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Expanded(
               child: _buildActionCard(
-                title: 'Schedule Pickup',
+                title: 'Schedule',
                 icon: Icons.schedule,
                 color: AppColors.lightGreen2,
                 onTap: () {
@@ -256,59 +256,64 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: AppColors.getSurfaceColor(themeProvider.isDarkMode),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.recycling,
-                size: 40,
-                color: AppColors.getPrimaryColor(themeProvider.isDarkMode),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Sell Your Recyclables',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.getPrimaryColor(
-                          themeProvider.isDarkMode,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Turn waste into cash',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.getTextSecondaryColor(
-                          themeProvider.isDarkMode,
-                        ),
-                      ),
-                    ),
-                  ],
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, AppRoutes.recyclablesMarketplace);
+          },
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppColors.getSurfaceColor(themeProvider.isDarkMode),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: AppColors.getPrimaryColor(themeProvider.isDarkMode),
-              ),
-            ],
+              ],
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.recycling,
+                  size: 40,
+                  color: AppColors.getPrimaryColor(themeProvider.isDarkMode),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Sell Your Recyclables',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.getPrimaryColor(
+                            themeProvider.isDarkMode,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Turn waste into cash',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.getTextSecondaryColor(
+                            themeProvider.isDarkMode,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  color: AppColors.getPrimaryColor(themeProvider.isDarkMode),
+                ),
+              ],
+            ),
           ),
         ),
       ],
