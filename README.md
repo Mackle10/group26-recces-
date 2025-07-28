@@ -13,8 +13,8 @@ A Flutter-based mobile application that revolutionizes waste collection and recy
 - 🔔 Real-time notifications about pickup schedules
 
 ### For Waste Management Companies:
-- 🗺️ Optimized route planning using Google Maps API
-- 📊 Dashboard with daily pickup requests and locations
+- 🗺️ Optimized route planning using Google Maps API's
+- 📊 Dashboards with daily pickup requests and locations
 - 🔍 Search for available recyclable materials
 - 💰 Payment system integration
 - ⏱️ Efficient scheduling and time management

@@ -8,6 +8,8 @@ import "dart:convert";
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CompanyDashboard extends StatefulWidget {
   const CompanyDashboard({super.key});
@@ -29,22 +31,24 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
   final LatLng _companyLocation = const LatLng(0.333229, 32.568032);
   final LatLng _customerLocation = const LatLng(0.331229, 32.565032);
   Set<Marker> _markers = {};
-  Set<Polyline> _polylines = {};
+  final Set<Polyline> _polylines = {};
+  List<Map<String, dynamic>> _assignedPickups = [];
+  bool _isLoadingRoutes = false;
 
   @override
   void initState() {
     super.initState();
+    _initializeMarkers();
+    _loadAssignedPickups();
+  }
+
+  void _initializeMarkers() {
     _markers = {
       Marker(
         markerId: const MarkerId('company'),
         position: _companyLocation,
         infoWindow: const InfoWindow(title: 'Your Location'),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-      ),
-      Marker(
-        markerId: const MarkerId('customer'),
-        position: _customerLocation,
-        infoWindow: const InfoWindow(title: 'Customer Pickup'),
       ),
       ...(latlngs.map((latlng) {
         final lat = latlng[0];
@@ -59,28 +63,170 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
         );
       }).toList()),
     };
-
-    _polylines = {
-      // Polyline(
-      //   polylineId: const PolylineId('route'),
-      //   points: [_companyLocation, _customerLocation],
-      //   color: AppColors.primary,
-      //   width: 5,
-      // ),
-    };
-
-    _generateRoutes();
   }
 
-  void _generateRoutes() async {
-    final currentLocation = await _getCurrentLocation();
-    // Example of generating a route between two points
-    final route = MapRoute(start: _companyLocation, end: _customerLocation);
-    final polyline = await route.generatePolyline('route1');
+  Future<void> _loadAssignedPickups() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
+
+      final QuerySnapshot pickupSnapshot = await FirebaseFirestore.instance
+          .collection('pickup_assignments')
+          .where('companyId', isEqualTo: currentUser.uid)
+          .where('status', isEqualTo: 'assigned')
+          .get();
+
+      final List<Map<String, dynamic>> pickups = [];
+      for (var doc in pickupSnapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+
+        // Get user details
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(data['userId'])
+            .get();
+
+        if (userDoc.exists) {
+          final userData = userDoc.data() as Map<String, dynamic>;
+          pickups.add({
+            'id': doc.id,
+            'userId': data['userId'],
+            'userName': userData['name'] ?? 'Unknown User',
+            'userAddress': userData['address'] ?? 'No Address',
+            'userLocation': data['userLocation'],
+            'wasteType': data['wasteType'] ?? 'General',
+            'status': data['status'],
+            'assignedAt': data['assignedAt'],
+          });
+        }
+      }
+
+      setState(() {
+        _assignedPickups = pickups;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading assigned pickups: $e')),
+      );
+    }
+  }
+
+  Future<void> _generateOptimalRoutes() async {
+    if (_assignedPickups.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No assigned pickups found')),
+      );
+      return;
+    }
+
     setState(() {
-      _currentLocation = currentLocation;
+      _isLoadingRoutes = true;
+    });
+
+    try {
+      // Clear existing polylines
+      _polylines.clear();
+
+      // Create markers for assigned pickups
+      final Set<Marker> pickupMarkers = {};
+      final List<LatLng> pickupLocations = [];
+
+      for (int i = 0; i < _assignedPickups.length; i++) {
+        final pickup = _assignedPickups[i];
+        final location = pickup['userLocation'] as GeoPoint;
+        final latLng = LatLng(location.latitude, location.longitude);
+
+        pickupMarkers.add(
+          Marker(
+            markerId: MarkerId('pickup_${pickup['id']}'),
+            position: latLng,
+            infoWindow: InfoWindow(
+              title: pickup['userName'],
+              snippet: '${pickup['wasteType']} • ${pickup['userAddress']}',
+            ),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueRed,
+            ),
+          ),
+        );
+        pickupLocations.add(latLng);
+      }
+
+      // Update markers
+      setState(() {
+        _markers = {..._markers, ...pickupMarkers};
+      });
+
+      // Generate route from company to all pickup locations
+      if (pickupLocations.isNotEmpty) {
+        await _generateRouteToPickups(pickupLocations);
+      }
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Generated route for ${_assignedPickups.length} pickups',
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error generating routes: $e')));
+    } finally {
+      setState(() {
+        _isLoadingRoutes = false;
+      });
+    }
+  }
+
+  Future<void> _generateRouteToPickups(List<LatLng> pickupLocations) async {
+    // Simple route generation: company -> nearest pickup -> next nearest, etc.
+    // In a real app, you'd use a more sophisticated algorithm like TSP
+
+    List<LatLng> route = [_companyLocation];
+    List<LatLng> remaining = List.from(pickupLocations);
+
+    while (remaining.isNotEmpty) {
+      // Find nearest pickup to current location
+      LatLng current = route.last;
+      int nearestIndex = 0;
+      double minDistance = double.infinity;
+
+      for (int i = 0; i < remaining.length; i++) {
+        double distance = _calculateDistance(current, remaining[i]);
+        if (distance < minDistance) {
+          minDistance = distance;
+          nearestIndex = i;
+        }
+      }
+
+      route.add(remaining[nearestIndex]);
+      remaining.removeAt(nearestIndex);
+    }
+
+    // Generate polyline for the route
+    final polyline = Polyline(
+      polylineId: const PolylineId('pickup_route'),
+      points: route,
+      color: AppColors.primary,
+      width: 5,
+    );
+
+    setState(() {
       _polylines.add(polyline);
     });
+  }
+
+  double _calculateDistance(LatLng point1, LatLng point2) {
+    return Geolocator.distanceBetween(
+      point1.latitude,
+      point1.longitude,
+      point2.latitude,
+      point2.longitude,
+    );
   }
 
   Future<LatLng> _getCurrentLocation() async {
@@ -152,14 +298,29 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
               color: AppColors.lightGreen1,
               child: Column(
                 children: [
-                  ListTile(
-                    title: const Text('Customer Name'),
-                    subtitle: const Text('123 Main St, Nairobi'),
-                    trailing: Chip(
-                      label: const Text('Recyclable'),
-                      backgroundColor: AppColors.lightGreen2,
-                    ),
-                  ),
+                  _assignedPickups.isEmpty
+                      ? ListTile(
+                          title: const Text('No Assigned Pickups'),
+                          subtitle: const Text(
+                            'No customers assigned for pickup',
+                          ),
+                          trailing: Chip(
+                            label: const Text('0'),
+                            backgroundColor: Colors.grey[300],
+                          ),
+                        )
+                      : ListTile(
+                          title: Text(
+                            '${_assignedPickups.length} Assigned Pickups',
+                          ),
+                          subtitle: Text(
+                            '${_assignedPickups.length} customers waiting for pickup',
+                          ),
+                          trailing: Chip(
+                            label: Text('${_assignedPickups.length}'),
+                            backgroundColor: AppColors.lightGreen2,
+                          ),
+                        ),
                   const SizedBox(height: 10),
                   Row(
                     children: [
@@ -169,8 +330,21 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                             backgroundColor: AppColors.secondary,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
-                          onPressed: () {},
-                          child: const Text('Start Pickup'),
+                          onPressed: _isLoadingRoutes
+                              ? null
+                              : _generateOptimalRoutes,
+                          child: _isLoadingRoutes
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                              : const Text('Start Pickup'),
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -184,6 +358,30 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.recyclablesMarketplace,
+                        );
+                      },
+                      icon: const Icon(Icons.recycling, color: Colors.white),
+                      label: const Text(
+                        'Recyclables Marketplace',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),

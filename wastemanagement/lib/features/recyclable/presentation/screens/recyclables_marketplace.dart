@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wastemanagement/core/constants/app_colors.dart';
-import 'package:wastemanagement/widgets/cards/recyclable_tile.dart';
 
 class RecyclablesMarketplace extends StatefulWidget {
   const RecyclablesMarketplace({super.key});
