@@ -63,6 +63,7 @@ class DeleteAccountRequested extends AuthEvent {}
 
 // Email verification
 class EmailVerificationSent extends AuthEvent {}
+
 class VerifyEmailRequested extends AuthEvent {}
 
 // O11:B
@@ -79,10 +80,7 @@ class LoginEvent extends AuthEvent {
   final String email;
   final String password;
 
-  const LoginEvent({
-    required this.email,
-    required this.password,
-  });
+  const LoginEvent({required this.email, required this.password});
 
   @override
   List<Object> get props => [email, password];
@@ -94,6 +92,7 @@ class RegisterEvent extends AuthEvent {
   final String phone;
   final String password;
   final String role;
+  final Map<String, dynamic>? companyData;
 
   const RegisterEvent({
     required this.name,
@@ -101,10 +100,18 @@ class RegisterEvent extends AuthEvent {
     required this.phone,
     required this.password,
     required this.role,
+    this.companyData,
   });
 
   @override
-  List<Object> get props => [name, email, phone, password, role];
+  List<Object> get props => [
+    name,
+    email,
+    phone,
+    password,
+    role,
+    companyData ?? {},
+  ];
 }
 
 // O11:E

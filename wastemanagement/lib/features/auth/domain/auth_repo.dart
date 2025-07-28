@@ -26,15 +26,11 @@ abstract class AuthRepository {
 
   Future<void> signOut();
   Future<void> deleteAccount();
-  Future<void> updateUserProfile({
-    String? displayName,
-    String? photoUrl,
-  });
+  Future<void> updateUserProfile({String? displayName, String? photoUrl});
 
   Future<String> getIdToken();
   Future<User?> getCurrentUser(); // <--- use Firebase User directly
 }
-
 
 class FirebaseAuthRepository implements AuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -55,10 +51,17 @@ class FirebaseAuthRepository implements AuthRepository {
     required String email,
     required String password,
   }) async {
-    await _firebaseAuth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    print('Auth repository: Attempting sign in for $email'); // Debug log
+    try {
+      await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      print('Auth repository: Sign in successful'); // Debug log
+    } catch (e) {
+      print('Auth repository: Sign in failed - $e'); // Debug log
+      rethrow; // Re-throw the error so the bloc can handle it
+    }
   }
 
   @override
@@ -87,7 +90,10 @@ class FirebaseAuthRepository implements AuthRepository {
         role: role,
         createdAt: DateTime.now(),
       );
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set(userModel.toMap());
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set(userModel.toMap());
     }
     return _firebaseAuth.currentUser;
   }

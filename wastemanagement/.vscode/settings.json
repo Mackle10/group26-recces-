@@ -2,5 +2,6 @@
     "debug.enableStatusBarColor": false,
     "cSpell.words": [
         "wastemanagement"
-    ]
+    ],
+    "cmake.sourceDirectory": "C:/Users/CODEZ/Desktop/project/group26-recces-/wastemanagement/windows"
 }

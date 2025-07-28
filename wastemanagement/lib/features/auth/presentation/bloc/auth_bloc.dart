@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:wastemanagement/data/models/user_model.dart';
 
-
 part 'auth_event.dart';
 part 'auth_state.dart';
 
@@ -42,17 +41,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthStateChanged event,
     Emitter<AuthState> emit,
   ) async {
-    if (event.user != null) {
-      if (event.user!.emailVerified) {
-        // Fetch role from Firestore
-        final userDoc = await FirebaseFirestore.instance.collection('users').doc(event.user!.uid).get();
-        final role = userDoc.data()?['role'] ?? 'user';
-        emit(Authenticated(event.user!, role));
+    try {
+      if (event.user != null) {
+        if (event.user!.emailVerified) {
+          // Fetch role from Firestore
+          final userDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(event.user!.uid)
+              .get();
+          final role = userDoc.data()?['role'] ?? 'user';
+          print(
+            'Auth state changed - User: ${event.user!.email}, Role: $role',
+          ); // Debug log
+          emit(Authenticated(event.user!, role));
+        } else {
+          print('Auth state changed - User email not verified'); // Debug log
+          emit(UnverifiedEmail(event.user!));
+        }
       } else {
-        emit(UnverifiedEmail(event.user!));
+        print('Auth state changed - No user'); // Debug log
+        emit(Unauthenticated());
       }
-    } else {
-      emit(Unauthenticated());
+    } catch (e) {
+      print('Error in auth state changed: $e'); // Debug log
+      emit(AuthError('Error checking user authentication: $e'));
     }
   }
 
@@ -161,7 +173,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = await authRepository.getCurrentUser();
       if (user != null && user.emailVerified) {
         // Fetch role from Firestore
-        final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
         final role = userDoc.data()?['role'] ?? 'user';
         emit(Authenticated(user, role));
       } else if (user != null) {
@@ -176,26 +191,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   // New event handlers for O11 events
   Future<void> _handleLoginEvent(
-    
     LoginEvent event,
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
+    print('Login event received for email: ${event.email}'); // Debug log
     try {
       await authRepository.signInWithEmailAndPassword(
         email: event.email,
         password: event.password,
       );
-      final user = await authRepository.getCurrentUser();
-      // Fetch role from Firestore
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
-      final role = userDoc.data()?['role'] ?? 'user';
-      emit(Authenticated(user!, role));
+      print('Login successful, waiting for auth state change...'); // Debug log
+      // Don't emit Authenticated here - let _handleAuthStateChanged handle it
+      // This prevents conflicts with the auth state listener
     } on FirebaseAuthException catch (e) {
+      print('Firebase auth exception: ${e.code} - ${e.message}'); // Debug log
       emit(AuthError(_mapFirebaseError(e)));
       emit(Unauthenticated());
     } catch (e) {
-      emit(AuthError('Login failed. Please try again.'));
+      print('General login error: $e'); // Debug log
+      print('Error type: ${e.runtimeType}'); // Debug log
+      emit(AuthError('Login failed: ${e.toString()}'));
       emit(Unauthenticated());
     }
   }
@@ -213,8 +229,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         phoneNumber: event.phone,
         role: event.role, // pass role
       );
+
+      // If this is a company registration, save company data
+      if (event.role == 'company' && event.companyData != null) {
+        try {
+          await FirebaseFirestore.instance
+              .collection('companies')
+              .doc(user!.uid)
+              .set({
+                'userId': user.uid,
+                'email': user.email,
+                'createdAt': FieldValue.serverTimestamp(),
+                ...event.companyData!,
+              });
+        } catch (e) {
+          print('Error saving company data: $e');
+          // Continue with registration even if company data save fails
+        }
+      }
+
       // Fetch role from Firestore
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get();
       final role = userDoc.data()?['role'] ?? 'user';
       emit(Authenticated(user, role));
     } on FirebaseAuthException catch (e) {
@@ -242,6 +280,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   String _mapFirebaseError(FirebaseAuthException e) {
+    print('Firebase error code: ${e.code}'); // Debug log
+    print('Firebase error message: ${e.message}'); // Debug log
+
     switch (e.code) {
       case 'invalid-email':
         return 'Please enter a valid email address.';
@@ -263,8 +304,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return 'Please log in again to perform this action.';
       case 'invalid-credential':
         return 'Invalid credentials. Please try again.';
+      case 'network-request-failed':
+        return 'Network error. Please check your internet connection.';
+      case 'timeout':
+        return 'Request timed out. Please try again.';
+      case 'quota-exceeded':
+        return 'Service temporarily unavailable. Please try again later.';
+      case 'app-not-authorized':
+        return 'App not authorized. Please contact support.';
+      case 'keychain-error':
+        return 'Authentication service error. Please try again.';
+      case 'internal-error':
+        return 'Internal server error. Please try again.';
       default:
-        return 'An error occurred. Please try again.';
+        return 'Authentication error (${e.code}): ${e.message ?? 'Unknown error'}';
     }
   }
 

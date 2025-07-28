@@ -29,7 +29,7 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      // controller: controller,
+      controller: controller,
       initialValue: initialValue,
       validator: validator,
       keyboardType: keyboardType,

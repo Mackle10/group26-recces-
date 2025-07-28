@@ -6,6 +6,7 @@ import 'package:wastemanagement/features/home/presentation/screens/plain_intro_s
 import 'package:wastemanagement/features/pickup/presentation/screens/schedule_pickup_screen.dart';
 import 'package:wastemanagement/features/recyclable/presentation/screens/recyclables_marketplace.dart';
 import 'package:wastemanagement/features/payment/presentation/screens/payment_screen.dart';
+import 'package:wastemanagement/features/map/presentation/screens/map_screen.dart';
 
 class AppRoutes {
   static const initial = '/';
@@ -17,28 +18,26 @@ class AppRoutes {
   static const companyDashboard = '/company-dashboard';
   static const recyclablesMarketplace = '/recyclables';
   static const payment = '/payment';
+  static const map = '/map';
 
   static final routes = {
     '/': (context) => const PlainIntroScreen(),
     '/login': (context) => const LoginScreen(),
     '/register': (context) => const RegisterScreen(),
-    '/home': (context) => HomeScreen(
-          toggleTheme: (isDarkMode) {
-            // Implement the logic to toggle the theme here
-          },
-        ),
+    '/home': (context) => const HomeScreen(),
     '/schedule-pickup': (context) => const SchedulePickupScreen(),
     '/company-dashboard': (context) => const CompanyDashboard(),
     '/recyclables': (context) => const RecyclablesMarketplace(),
     '/payment': (context) => const PaymentScreen(),
+    '/map': (context) => const MapScreen(),
     // Add other routes here
   };
-// O11 abstract class AppRoutes {
+  // O11 abstract class AppRoutes {
   static const String recyclableList = '/recyclable-list';
   static const String sellScreen = '/sell';
-  
+
   static String getRecyclableListRoute() => recyclableList;
   static String getSellScreenRoute() => sellScreen;
-// O11 }
+  // O11 }
 }
 // need attention

@@ -7,6 +7,7 @@ import 'package:wastemanagement/widgets/custom_button.dart';
 import 'package:wastemanagement/widgets/custom_textfield.dart';
 import 'package:wastemanagement/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wastemanagement/routes/app_routes.dart';
+import 'package:wastemanagement/features/home/presentation/widgets/company_selection_dialog.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -36,6 +37,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  void _showCompanySelectionDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) =>
+          const CompanySelectionDialog(isRegistrationFlow: true),
+    ).then((result) {
+      if (result != null && result['success'] == true) {
+        // Company profile data collected, proceed with registration
+        final companyData = result['companyData'];
+
+        // Register the user with company role and data
+        context.read<AuthBloc>().add(
+          RegisterEvent(
+            name: _nameController.text,
+            email: _emailController.text,
+            phone: _phoneController.text,
+            password: _passwordController.text,
+            role: 'company',
+            companyData: companyData,
+          ),
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,13 +82,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
               context: context,
               builder: (context) => AlertDialog(
                 title: const Text('Registration Successful'),
-                content: Text('Welcome, $userName! Your registration is complete.'),
+                content: Text(
+                  'Welcome, $userName! Your registration is complete.',
+                ),
                 actions: [
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                       if (state.role == 'company') {
-                        Navigator.pushReplacementNamed(context, AppRoutes.companyDashboard);
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppRoutes.companyDashboard,
+                        );
                       } else {
                         Navigator.pushReplacementNamed(context, AppRoutes.home);
                       }
@@ -108,7 +140,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ],
                   ),
                 ),
-                
+
                 // Form Section
                 Card(
                   margin: EdgeInsets.zero,
@@ -160,13 +192,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             obscureText: _obscurePassword,
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscurePassword 
-                                    ? Icons.visibility_off 
+                                _obscurePassword
+                                    ? Icons.visibility_off
                                     : Icons.visibility,
                                 color: AppColors.primary,
                               ),
                               onPressed: () => setState(
-                                  () => _obscurePassword = !_obscurePassword),
+                                () => _obscurePassword = !_obscurePassword,
+                              ),
                             ),
                             validator: Validators.validatePassword,
                             fillColor: AppColors.lightGreen2.withOpacity(0.2),
@@ -180,46 +213,49 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             obscureText: _obscureConfirmPassword,
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscureConfirmPassword 
-                                    ? Icons.visibility_off 
+                                _obscureConfirmPassword
+                                    ? Icons.visibility_off
                                     : Icons.visibility,
                                 color: AppColors.primary,
                               ),
                               onPressed: () => setState(
-                                  () => _obscureConfirmPassword = !_obscureConfirmPassword),
+                                () => _obscureConfirmPassword =
+                                    !_obscureConfirmPassword,
+                              ),
                             ),
-                            validator: (value) => Validators.validateConfirmPassword(
-                              value,
-                              _passwordController.text,
-                            ),
+                            validator: (value) =>
+                                Validators.validateConfirmPassword(
+                                  value,
+                                  _passwordController.text,
+                                ),
                             fillColor: AppColors.lightGreen2.withOpacity(0.2),
                           ),
                           const SizedBox(height: 16),
-                          Row(
+                          Column(
                             children: [
-                              Expanded(
-                                child: RadioListTile<String>(
-                                  title: Text('User'),
-                                  value: 'user',
-                                  groupValue: _selectedRole,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedRole = value!;
-                                    });
-                                  },
-                                ),
+                              RadioListTile<String>(
+                                title: Text('User'),
+                                value: 'user',
+                                groupValue: _selectedRole,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedRole = value!;
+                                  });
+                                },
                               ),
-                              Expanded(
-                                child: RadioListTile<String>(
-                                  title: Text('Company'),
-                                  value: 'company',
-                                  groupValue: _selectedRole,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedRole = value!;
-                                    });
-                                  },
-                                ),
+                              RadioListTile<String>(
+                                title: Text('Company'),
+                                value: 'company',
+                                groupValue: _selectedRole,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedRole = value!;
+                                  });
+                                  // Show company selection dialog when company is selected
+                                  if (value == 'company') {
+                                    _showCompanySelectionDialog();
+                                  }
+                                },
                               ),
                             ],
                           ),
@@ -231,15 +267,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             textColor: AppColors.white,
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
+                                // For company users, ensure they've completed the company profile
+                                if (_selectedRole == 'company') {
+                                  _showCompanySelectionDialog();
+                                  return;
+                                }
+
+                                // For regular users, proceed with registration
                                 context.read<AuthBloc>().add(
-                                      RegisterEvent(
-                                        name: _nameController.text,
-                                        email: _emailController.text,
-                                        phone: _phoneController.text,
-                                        password: _passwordController.text,
-                                        role: _selectedRole,
-                                      ),
-                                    );
+                                  RegisterEvent(
+                                    name: _nameController.text,
+                                    email: _emailController.text,
+                                    phone: _phoneController.text,
+                                    password: _passwordController.text,
+                                    role: _selectedRole,
+                                  ),
+                                );
                               }
                             },
                           ),
@@ -248,7 +291,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                
+
                 // Footer Section
                 Padding(
                   padding: const EdgeInsets.only(top: 24),

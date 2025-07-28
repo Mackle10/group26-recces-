@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wastemanagement/core/constants/app_colors.dart';
+import 'package:wastemanagement/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:wastemanagement/routes/app_routes.dart';
 import "dart:convert";
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -47,10 +50,12 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
         final lat = latlng[0];
         final lng = latlng[1];
         return Marker(
-          markerId: MarkerId('recycle_${lat}_${lng}'),
+          markerId: MarkerId('recycle_${lat}_$lng'),
           position: LatLng(lat, lng),
           infoWindow: InfoWindow(title: 'Recycle Point'),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueOrange,
+          ),
         );
       }).toList()),
     };
@@ -79,8 +84,9 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
   }
 
   Future<LatLng> _getCurrentLocation() async {
-     Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
     double lat = position.latitude;
     double long = position.longitude;
     LatLng location = LatLng(lat, long);
@@ -90,79 +96,133 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Company Dashboard'),
-        backgroundColor: AppColors.primary,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: GoogleMap(
-              onMapCreated: (controller) => mapController = controller,
-              initialCameraPosition: CameraPosition(
-                target: _companyLocation,
-                zoom: 15,
-              ),
-              markers: { ..._markers,
-                ...(_currentLocation == null ? [] : [Marker(
-                  markerId: const MarkerId('current_location'),
-                  position: _currentLocation as LatLng,
-                  infoWindow: const InfoWindow(title: 'Current Location'),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-                )]),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is Unauthenticated) {
+          Navigator.pushReplacementNamed(context, AppRoutes.login);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Company Dashboard'),
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.white,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () {
+                _showLogoutDialog(context);
               },
-              polylines: _polylines,
-              // polylines: 
+              tooltip: 'Logout',
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: AppColors.lightGreen1,
-            child: Column(
-              children: [
-                ListTile(
-                  title: const Text('Customer Name'),
-                  subtitle: const Text('123 Main St, Nairobi'),
-                  trailing: Chip(
-                    label: const Text('Recyclable'),
-                    backgroundColor: AppColors.lightGreen2,
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: GoogleMap(
+                onMapCreated: (controller) => mapController = controller,
+                initialCameraPosition: CameraPosition(
+                  target: _companyLocation,
+                  zoom: 15,
+                ),
+                markers: {
+                  ..._markers,
+                  ...(_currentLocation == null
+                      ? []
+                      : [
+                          Marker(
+                            markerId: const MarkerId('current_location'),
+                            position: _currentLocation as LatLng,
+                            infoWindow: const InfoWindow(
+                              title: 'Current Location',
+                            ),
+                            icon: BitmapDescriptor.defaultMarkerWithHue(
+                              BitmapDescriptor.hueBlue,
+                            ),
+                          ),
+                        ]),
+                },
+                polylines: _polylines,
+                // polylines:
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(16),
+              color: AppColors.lightGreen1,
+              child: Column(
+                children: [
+                  ListTile(
+                    title: const Text('Customer Name'),
+                    subtitle: const Text('123 Main St, Nairobi'),
+                    trailing: Chip(
+                      label: const Text('Recyclable'),
+                      backgroundColor: AppColors.lightGreen2,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.secondary,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.secondary,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          onPressed: () {},
+                          child: const Text('Start Pickup'),
                         ),
-                        onPressed: () {},
-                        child: const Text('Start Pickup'),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          onPressed: () {},
+                          child: const Text('Contact'),
                         ),
-                        onPressed: () {},
-                        child: const Text('Contact'),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
-}
 
+  // Show logout confirmation dialog
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                // Dispatch logout event
+                context.read<AuthBloc>().add(LogoutRequested());
+              },
+              child: const Text('Logout', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
 
 class MapRoute {
   final LatLng start;
@@ -171,7 +231,6 @@ class MapRoute {
 
   MapRoute({required this.start, required this.end}) {
     apiKey = dotenv.env['GOOGLEMAPS_KEY'] ?? "";
-
   }
 
   // Polyline toPolyline() {
@@ -183,11 +242,12 @@ class MapRoute {
   //   );
   // }
 
-Future<Polyline> generatePolyline(String id) async {
+  Future<Polyline> generatePolyline(String id) async {
     final String origin = "${start.latitude},${start.longitude}";
-    final String destination ="${end.latitude},${end.longitude}";
+    final String destination = "${end.latitude},${end.longitude}";
 
-    final String mainApi = "https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}";
+    final String mainApi =
+        "https://maps.googleapis.com/maps/api/directions/json?origin=$origin&destination=$destination&key=$apiKey";
     final Uri uri = Uri.parse(mainApi);
     var response = await http.get(uri);
 
@@ -206,12 +266,12 @@ Future<Polyline> generatePolyline(String id) async {
     //   );
     // });
     return Polyline(
-            polylineId: PolylineId(id),
-            visible: true,
-            points: points,
-            //width: 4,
-            color: Colors.orange,
-      );
+      polylineId: PolylineId(id),
+      visible: true,
+      points: points,
+      //width: 4,
+      color: Colors.orange,
+    );
   }
 
   List<LatLng> _decodePoly(String encoded) {

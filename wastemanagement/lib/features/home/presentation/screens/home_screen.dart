@@ -3,40 +3,49 @@ import 'package:wastemanagement/core/constants/app_colors.dart';
 import 'package:wastemanagement/features/pickup/presentation/screens/schedule_pickup_screen.dart';
 import 'package:wastemanagement/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wastemanagement/features/settings/presentation/screens/settings_screen.dart'; // Import SettingsScreen
+import 'package:wastemanagement/features/settings/presentation/screens/settings_screen.dart';
+import 'package:wastemanagement/routes/app_routes.dart';
+import 'package:provider/provider.dart';
+import 'package:wastemanagement/core/providers/theme_provider.dart';
 
 class HomeScreen extends StatefulWidget {
-  final Function(bool) toggleTheme; // Added toggleTheme callback
-
-  const HomeScreen({super.key, required this.toggleTheme});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is Unauthenticated) {
-          Navigator.pushReplacementNamed(context, '/login');
-        }
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is Unauthenticated) {
+              Navigator.pushReplacementNamed(context, '/login');
+            }
+          },
+          child: Scaffold(
+            backgroundColor: AppColors.getBackgroundColor(
+              themeProvider.isDarkMode,
+            ),
+            appBar: _buildAppBar(themeProvider),
+            body: _buildBody(themeProvider),
+            floatingActionButton: _buildFloatingActionButton(),
+            bottomNavigationBar: _buildBottomNavigationBar(),
+          ),
+        );
       },
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: _buildAppBar(),
-        body: _buildBody(),
-        floatingActionButton: _buildFloatingActionButton(),
-        bottomNavigationBar: _buildBottomNavigationBar(),
-      ),
     );
   }
 
   // AppBar Widget
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(ThemeProvider themeProvider) {
     return AppBar(
-      title: const Text(
+      title: Text(
         'Waste Management',
         style: TextStyle(
           color: AppColors.white,
@@ -44,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
           fontSize: 22,
         ),
       ),
-      backgroundColor: AppColors.primary,
+      backgroundColor: AppColors.getPrimaryColor(themeProvider.isDarkMode),
       elevation: 0,
       centerTitle: false,
       actions: [
@@ -69,28 +78,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Body Widget
-  Widget _buildBody() {
+  Widget _buildBody(ThemeProvider themeProvider) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildWelcomeSection(),
+          _buildWelcomeSection(themeProvider),
           const SizedBox(height: 30),
           _buildQuickActionsSection(),
           const SizedBox(height: 30),
-          _buildRecyclablesMarketplaceSection(),
+          _buildRecyclablesMarketplaceSection(themeProvider),
         ],
       ),
     );
   }
 
   // Welcome Section
-  Widget _buildWelcomeSection() {
+  Widget _buildWelcomeSection(ThemeProvider themeProvider) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.lightGreen1.withOpacity(0.8),
+        color: themeProvider.isDarkMode
+            ? AppColors.darkSurface
+            : AppColors.lightGreen1.withOpacity(0.8),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -102,10 +113,16 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Row(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 28,
-            backgroundColor: AppColors.white,
-            child: Icon(Icons.person, size: 30, color: AppColors.primary),
+            backgroundColor: AppColors.getSurfaceColor(
+              themeProvider.isDarkMode,
+            ),
+            child: Icon(
+              themeProvider.isDarkMode ? Icons.dark_mode : Icons.person,
+              size: 30,
+              color: AppColors.getPrimaryColor(themeProvider.isDarkMode),
+            ),
           ),
           const SizedBox(width: 16),
           Column(
@@ -114,17 +131,19 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 'Welcome back!',
                 style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
                   fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.getPrimaryColor(themeProvider.isDarkMode),
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                'Ready to manage your waste?',
+                'Let\'s manage waste responsibly',
                 style: TextStyle(
-                  color: AppColors.black.withOpacity(0.7),
                   fontSize: 14,
+                  color: AppColors.getTextSecondaryColor(
+                    themeProvider.isDarkMode,
+                  ),
                 ),
               ),
             ],
@@ -136,201 +155,212 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Quick Actions Section
   Widget _buildQuickActionsSection() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Quick Actions',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Schedule Pickup',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Book a waste pickup at your convenience.',
-                  style: TextStyle(
-                    color: AppColors.black.withOpacity(0.6),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  icon: const Icon(Icons.calendar_today),
-                  label: const Text('Schedule Now'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SchedulePickupScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            flex: 1,
-            child: Column(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    'assets/images/image1.jpg',
-                    height: 60,
-                    width: 60,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    'assets/images/image2.jpg',
-                    height: 60,
-                    width: 60,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Recyclables Marketplace Section
-  Widget _buildRecyclablesMarketplaceSection() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: InkWell(
-        onTap: () {
-          Navigator.pushNamed(context, '/recyclables');
-        },
-        child: Row(
+        ),
+        const SizedBox(height: 16),
+        Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppColors.lightGreen2.withOpacity(0.3),
-                shape: BoxShape.circle,
+            Expanded(
+              child: _buildActionCard(
+                title: 'Schedule Pickup',
+                icon: Icons.schedule,
+                color: AppColors.lightGreen2,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SchedulePickupScreen(),
+                    ),
+                  );
+                },
               ),
-              child: const Icon(Icons.recycling, size: 28, color: AppColors.primary),
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Recyclables Marketplace',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Sell your recyclable materials',
-                    style: TextStyle(
-                      color: AppColors.black.withOpacity(0.6),
-                    ),
-                  ),
-                ],
+              child: _buildActionCard(
+                title: 'View Map',
+                icon: Icons.map,
+                color: AppColors.secondary,
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.map);
+                },
               ),
             ),
-            const Icon(Icons.chevron_right, color: AppColors.primary),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // Action Card Widget
+  Widget _buildActionCard({
+    required String title,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 40, color: Colors.white),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),
     );
   }
 
+  // Recyclables Marketplace Section
+  Widget _buildRecyclablesMarketplaceSection(ThemeProvider themeProvider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Recyclables Marketplace',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColors.getPrimaryColor(themeProvider.isDarkMode),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.getSurfaceColor(themeProvider.isDarkMode),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.recycling,
+                size: 40,
+                color: AppColors.getPrimaryColor(themeProvider.isDarkMode),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Sell Your Recyclables',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.getPrimaryColor(
+                          themeProvider.isDarkMode,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Turn waste into cash',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.getTextSecondaryColor(
+                          themeProvider.isDarkMode,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: AppColors.getPrimaryColor(themeProvider.isDarkMode),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   // Floating Action Button
-  FloatingActionButton _buildFloatingActionButton() {
+  Widget _buildFloatingActionButton() {
     return FloatingActionButton(
       onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const SchedulePickupScreen(),
-          ),
-        );
+        // Add floating action button logic
       },
       backgroundColor: AppColors.primary,
-      child: const Icon(Icons.add, color: AppColors.white),
+      child: const Icon(Icons.add, color: Colors.white),
     );
   }
 
   // Bottom Navigation Bar
   Widget _buildBottomNavigationBar() {
     return BottomNavigationBar(
+      currentIndex: _selectedIndex,
+      onTap: (index) {
+        setState(() {
+          _selectedIndex = index;
+        });
+
+        // Handle navigation based on index
+        switch (index) {
+          case 0: // Home
+            // Already on home
+            break;
+          case 1: // History
+            // Navigate to history or show history
+            break;
+          case 2: // Settings
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SettingsScreen()),
+            );
+            break;
+        }
+      },
       items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.history),
-          label: 'History',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: 'Settings',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
+        BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
       ],
       selectedItemColor: AppColors.primary,
       unselectedItemColor: AppColors.black.withOpacity(0.5),
       backgroundColor: AppColors.white,
       elevation: 8,
       showUnselectedLabels: true,
-      onTap: (index) {
-        if (index == 2) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SettingsScreen(toggleTheme: widget.toggleTheme),
-            ),
-          );
-        }
-      },
     );
   }
 }
