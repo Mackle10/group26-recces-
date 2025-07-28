@@ -1,8 +1,10 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wastemanagement/core/constants/app_colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geolocator/geolocator.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -13,19 +15,89 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
-  final LatLng _initialPosition = const LatLng(
+  LatLng _currentPosition = const LatLng(
     0.304833,
     32.554851,
-  ); // Uganda coordinates
+  ); // Uganda coordinates (fallback)
 
   final Set<Marker> _markers = {};
   bool _isLoading = true;
+  bool _isLocationLoading = true;
   List<Map<String, dynamic>> _companies = [];
 
   @override
   void initState() {
     super.initState();
+    _getCurrentLocation();
     _loadCompanyMarkers();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      setState(() {
+        _isLocationLoading = true;
+      });
+
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location services are disabled')),
+        );
+        setState(() {
+          _isLocationLoading = false;
+        });
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permissions are denied')),
+          );
+          setState(() {
+            _isLocationLoading = false;
+          });
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Location permissions are permanently denied'),
+          ),
+        );
+        setState(() {
+          _isLocationLoading = false;
+        });
+        return;
+      }
+
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      setState(() {
+        _currentPosition = LatLng(position.latitude, position.longitude);
+        _isLocationLoading = false;
+      });
+
+      // Center map on user location
+      if (mapController != null) {
+        await mapController.animateCamera(
+          CameraUpdate.newLatLngZoom(_currentPosition, 13),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isLocationLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error getting location: $e')));
+    }
   }
 
   Future<void> _loadCompanyMarkers() async {
@@ -87,6 +159,11 @@ class _MapScreenState extends State<MapScreen> {
         _markers.addAll(markers);
         _isLoading = false;
       });
+
+      // Auto-center map to show all markers
+      if (markers.isNotEmpty) {
+        _centerMapOnMarkers();
+      }
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -95,6 +172,39 @@ class _MapScreenState extends State<MapScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text('Error loading companies: $e')));
     }
+  }
+
+  void _centerMapOnMarkers() {
+    if (_markers.isEmpty) return;
+
+    double minLat = double.infinity;
+    double maxLat = -double.infinity;
+    double minLng = double.infinity;
+    double maxLng = -double.infinity;
+
+    // Calculate bounds including user location
+    final allPositions = <LatLng>[
+      _currentPosition,
+      ..._markers.map((marker) => marker.position),
+    ];
+
+    for (final position in allPositions) {
+      minLat = min(minLat, position.latitude);
+      maxLat = max(maxLat, position.latitude);
+      minLng = min(minLng, position.longitude);
+      maxLng = max(maxLng, position.longitude);
+    }
+
+    // Add padding to bounds
+    const padding = 0.01; // About 1km
+    final bounds = LatLngBounds(
+      southwest: LatLng(minLat - padding, minLng - padding),
+      northeast: LatLng(maxLat + padding, maxLng + padding),
+    );
+
+    mapController.animateCamera(
+      CameraUpdate.newLatLngBounds(bounds, 50), // 50px padding
+    );
   }
 
   void _showCompanyDetails(Map<String, dynamic> companyData) {
@@ -327,6 +437,13 @@ class _MapScreenState extends State<MapScreen> {
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    // Center map on user location if available
+    if (!_isLocationLoading &&
+        _currentPosition != const LatLng(0.304833, 32.554851)) {
+      controller.animateCamera(
+        CameraUpdate.newLatLngZoom(_currentPosition, 13),
+      );
+    }
   }
 
   @override
@@ -348,7 +465,7 @@ class _MapScreenState extends State<MapScreen> {
           GoogleMap(
             onMapCreated: _onMapCreated,
             initialCameraPosition: CameraPosition(
-              target: _initialPosition,
+              target: _currentPosition,
               zoom: 13,
             ),
             markers: _markers,
