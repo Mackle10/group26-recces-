@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             appBar: _buildAppBar(themeProvider),
             body: _buildBody(themeProvider),
-            floatingActionButton: _buildFloatingActionButton(),
+            // floatingActionButton: _buildFloatingActionButton(),
             bottomNavigationBar: _buildBottomNavigationBar(),
           ),
         );
@@ -321,15 +321,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Floating Action Button
-  Widget _buildFloatingActionButton() {
-    return FloatingActionButton(
-      onPressed: () {
-        // Add floating action button logic
-      },
-      backgroundColor: AppColors.primary,
-      child: const Icon(Icons.add, color: Colors.white),
-    );
-  }
+  // Widget _buildFloatingActionButton() {
+  //   return FloatingActionButton(
+  //     onPressed: () {
+  //       // Add floating action button logic
+  //     },
+  //     backgroundColor: AppColors.primary,
+  //     child: const Icon(Icons.add, color: Colors.white),
+  //   );
+  // }
 
   // Bottom Navigation Bar
   Widget _buildBottomNavigationBar() {

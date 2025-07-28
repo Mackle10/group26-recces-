@@ -43,6 +43,12 @@ service cloud.firestore {
       allow update, delete: if isCompany() || isAdmin();
     }
     
+    match /pickup_assignments/{assignmentId} {
+      allow read: if isUserAssociated(assignmentId) || isCompany() || isAdmin();
+      allow create: if isUser();
+      allow update, delete: if isCompany() || isAdmin();
+    }
+    
     match /recyclables/{recyclableId} {
       allow read: if isUser() || isCompany() || isAdmin();
       allow create: if isUser();
