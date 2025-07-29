@@ -8,13 +8,13 @@ A Flutter-based mobile application that revolutionizes waste collection and recy
 ### For Households:
 - 🗑️ Schedule waste pickups from your home
 - 📍 Automatic location detection via GPS
-- ♻️ Sort and sell recyclable materials (plastics, metals, paper)
+- ♻️ Sort and sell recyclable materials (plastics, metals, paper,electronics)
 - 💳 Mobile money payments for recyclables
 - 🔔 Real-time notifications about pickup schedules
 
 ### For Waste Management Companies:
-- 🗺️ Optimized route planning using Google Maps API
-- 📊 Dashboard with daily pickup requests and locations
+- 🗺️ Optimized route planning using Google Maps API's
+- 📊 Dashboards with daily pickup requests and locations
 - 🔍 Search for available recyclable materials
 - 💰 Payment system integration
 - ⏱️ Efficient scheduling and time management
@@ -66,7 +66,7 @@ A Flutter-based mobile application that revolutionizes waste collection and recy
 
 
 ## Screenshots
-![image alt](https://github.com/Mackle10/group26-recces-/blob/cd82b10f198e6ac86d4aefc2b55740d01ece28cf/Screenshots.jpg)
+![image alt](https://github.com/Mackle10/group26-recces-/blob/cd82b10f198e6ac86d4aefc2b55740d01ece28cf/screenshots)
 
 
 ## Future Enhancements
