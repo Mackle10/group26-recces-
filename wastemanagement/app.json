@@ -1,0 +1,22 @@
+{
+  "name": "wastemanagement-web",
+  "description": "Waste Management Flutter Web App",
+  "repository": "https://github.com/your-username/wastemanagement",
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-nodejs"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-google-chrome"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-apt"
+    }
+  ],
+  "env": {
+    "FLUTTER_VERSION": "3.24.5"
+  },
+  "scripts": {
+    "postdeploy": "flutter build web"
+  }
+} 
