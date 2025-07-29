@@ -5,7 +5,7 @@
 *.swp
 .DS_Store
 .atom/
-.build/
+# .build/
 .buildlog/
 .history
 .svn/
@@ -32,6 +32,8 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+# Allow web build files for Heroku deployment
+!build/web/
 
 # Symbolication related
 app.*.symbols
