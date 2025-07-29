@@ -1,92 +1,39 @@
-# Flutter Web App Deployment Guide
+# Flutter Web App Deployment
 
-## Prerequisites
+## Quick Deploy to Heroku
 
-1. Heroku CLI installed
-2. Git repository set up
-3. Google Maps API key (for map functionality)
-
-## Deployment Steps
-
-### 1. Set up Heroku App
-
-```bash
-# Create a new Heroku app
-heroku create your-app-name
-
-# Set the buildpacks
-heroku buildpacks:set heroku/nodejs
-heroku buildpacks:add heroku/google-chrome
-heroku buildpacks:add heroku/apt
-```
-
-### 2. Set Environment Variables
-
-```bash
-# Set your Google Maps API key
-heroku config:set GOOGLEMAPS_KEY=your_actual_google_maps_api_key
-```
-
-### 3. Deploy
-
-```bash
-# Add all files to git
-git add .
-
-# Commit changes
-git commit -m "Deploy Flutter web app"
-
-# Push to Heroku
-git push heroku main
-```
-
-### 4. Open the App
-
-```bash
-heroku open
-```
-
-## Troubleshooting
-
-### If the app shows "App is being built..."
-
-1. Check the build logs:
+1. **Set up buildpacks:**
    ```bash
-   heroku logs --tail
+   heroku buildpacks:set heroku/nodejs
+   heroku buildpacks:add heroku/google-chrome
+   heroku buildpacks:add heroku/apt
    ```
 
-2. Ensure all buildpacks are set correctly:
+2. **Set environment variables:**
    ```bash
-   heroku buildpacks
+   heroku config:set GOOGLEMAPS_KEY=your_google_maps_api_key
    ```
 
-3. Try rebuilding:
+3. **Deploy:**
    ```bash
-   heroku builds:cancel
-   git commit --allow-empty -m "Trigger rebuild"
+   git add .
+   git commit -m "Deploy Flutter web app"
    git push heroku main
    ```
 
-### Common Issues
-
-1. **Build fails**: Check if Flutter is properly installed and all dependencies are available
-2. **404 errors**: Ensure the build/web directory is created with index.html
-3. **Environment variables**: Make sure GOOGLEMAPS_KEY is set correctly
-
-## File Structure
+## Files Added/Modified
 
 - `build.sh`: Build script that installs Flutter and builds the web app
-- `server.js`: Express server to serve the built Flutter web app
-- `package.json`: Node.js configuration
-- `Procfile`: Heroku process definition
-- `heroku.yml`: Heroku build configuration
-- `static.json`: Static site configuration
-- `.buildpacks`: Buildpack configuration
-- `Aptfile`: System dependencies
+- `package.json`: Added build scripts
+- `Procfile`: Updated to build before starting
+- `Aptfile`: System dependencies for Flutter
+- `server.js`: Serves the built Flutter web app
 
-## Notes
+## Troubleshooting
 
-- The app uses Flutter 3.24.5
-- Web renderer is set to HTML for better compatibility
-- The build process may take several minutes on first deployment
-- Make sure to set your actual Google Maps API key in Heroku config 
+If you get build errors, check the logs:
+```bash
+heroku logs --tail
+```
+
+The build process may take several minutes on first deployment. 
