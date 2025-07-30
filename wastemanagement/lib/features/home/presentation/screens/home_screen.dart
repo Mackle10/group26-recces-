@@ -384,7 +384,7 @@ class _HomeScreenState extends State<HomeScreen> {
           case 0: // Home
             // Already on home
             break;
-          case 1: // History
+          case 1: // Histories
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const HistoryScreen()),
