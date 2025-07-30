@@ -780,7 +780,7 @@ class _EnhancedCompanyDashboardState extends State<EnhancedCompanyDashboard>
     } else if (currentStatus == 'in_progress') {
       newStatus = 'completed';
     } else {
-      return; // Already completed
+      return; // Already completed.
     }
 
     try {
