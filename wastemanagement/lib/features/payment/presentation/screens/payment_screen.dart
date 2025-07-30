@@ -32,7 +32,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     setState(() {
       _statusMessage = 'Processing payment...';
     });
-    // Simulate payment processing
+    // Simulate payment processings
     Future.delayed(const Duration(seconds: 2), () {
       setState(() {
         _statusMessage = 'Payment successful!';
