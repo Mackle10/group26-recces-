@@ -17,7 +17,7 @@ class AuthStateChanged extends AuthEvent {
   List<Object> get props => [user ?? Object()];
 }
 
-// User login attempt
+// User login attempts
 class LoginRequested extends AuthEvent {
   final String email;
   final String password;
