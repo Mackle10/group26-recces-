@@ -481,8 +481,9 @@ class _EnhancedCompanyDashboardState extends State<EnhancedCompanyDashboard>
             setState(() {});
           },
           child: ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             itemCount: pickups.length,
+            physics: const BouncingScrollPhysics(),
             itemBuilder: (context, index) {
               final pickup = pickups[index];
               return _buildPickupCard(pickup);
@@ -498,9 +499,9 @@ class _EnhancedCompanyDashboardState extends State<EnhancedCompanyDashboard>
     final assignedDate = pickup['assignedAt'] as Timestamp?;
     
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -508,18 +509,18 @@ class _EnhancedCompanyDashboardState extends State<EnhancedCompanyDashboard>
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     color: _getWasteTypeColor(pickup['wasteType']).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(6),
                   ),
                   child: Icon(
                     _getWasteTypeIcon(pickup['wasteType']),
                     color: _getWasteTypeColor(pickup['wasteType']),
-                    size: 20,
+                    size: 16,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -527,128 +528,185 @@ class _EnhancedCompanyDashboardState extends State<EnhancedCompanyDashboard>
                       Text(
                         pickup['userName'] ?? 'Unknown User',
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         pickup['wasteType'] ?? 'General',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 12,
                           color: Colors.grey[600],
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: _getStatusColor(pickup['status']),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     pickup['status'] == 'assigned' ? 'New' : pickup['status'],
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 12,
+                      fontSize: 10,
                       fontWeight: FontWeight.w500,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
 
             // Address
             if (pickup['address'] != null) ...[
               Row(
                 children: [
-                  Icon(Icons.location_on_outlined, size: 16, color: Colors.grey[600]),
+                  Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[600]),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
                       pickup['address'],
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
             ],
 
             // Scheduled Date
             if (scheduledDate != null) ...[
               Row(
                 children: [
-                  Icon(Icons.schedule_outlined, size: 16, color: Colors.grey[600]),
+                  Icon(Icons.schedule_outlined, size: 14, color: Colors.grey[600]),
                   const SizedBox(width: 4),
-                  Text(
-                    'Scheduled: ${DateFormat('MMM dd, yyyy • hh:mm a').format(scheduledDate.toDate())}',
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  Expanded(
+                    child: Text(
+                      'Scheduled: ${DateFormat('MMM dd, yyyy • hh:mm a').format(scheduledDate.toDate())}',
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
             ],
 
             // Contact Info
             if (pickup['userPhone'] != null) ...[
               Row(
                 children: [
-                  Icon(Icons.phone_outlined, size: 16, color: Colors.grey[600]),
+                  Icon(Icons.phone_outlined, size: 14, color: Colors.grey[600]),
                   const SizedBox(width: 4),
                   Text(
                     pickup['userPhone'],
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
             ],
 
             // Action Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => _openDirections(pickup),
-                    icon: const Icon(Icons.directions, size: 16),
-                    label: const Text('Directions'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => _callCustomer(pickup),
-                    icon: const Icon(Icons.phone, size: 16),
-                    label: const Text('Call'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.green,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _updatePickupStatus(pickup),
-                    icon: Icon(
-                      pickup['status'] == 'assigned' ? Icons.play_arrow : Icons.check,
-                      size: 16,
-                    ),
-                    label: Text(
-                      pickup['status'] == 'assigned' ? 'Start' : 'Complete',
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: pickup['status'] == 'assigned' ? Colors.blue : Colors.green,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                // For smaller screens, use icon-only buttons
+                if (constraints.maxWidth < 300) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButton(
+                        onPressed: () => _openDirections(pickup),
+                        icon: const Icon(Icons.directions, size: 18),
+                        tooltip: 'Directions',
+                        padding: const EdgeInsets.all(4),
+                      ),
+                      IconButton(
+                        onPressed: () => _callCustomer(pickup),
+                        icon: const Icon(Icons.phone, size: 18),
+                        tooltip: 'Call',
+                        padding: const EdgeInsets.all(4),
+                      ),
+                      IconButton(
+                        onPressed: () => _updatePickupStatus(pickup),
+                        icon: Icon(
+                          pickup['status'] == 'assigned' ? Icons.play_arrow : Icons.check,
+                          size: 18,
+                        ),
+                        tooltip: pickup['status'] == 'assigned' ? 'Start' : 'Complete',
+                        padding: const EdgeInsets.all(4),
+                      ),
+                    ],
+                  );
+                } else {
+                  // For larger screens, use compact text buttons
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => _openDirections(pickup),
+                          icon: const Icon(Icons.directions, size: 14),
+                          label: const Text('Directions'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.primary,
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => _callCustomer(pickup),
+                          icon: const Icon(Icons.phone, size: 14),
+                          label: const Text('Call'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.green,
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () => _updatePickupStatus(pickup),
+                          icon: Icon(
+                            pickup['status'] == 'assigned' ? Icons.play_arrow : Icons.check,
+                            size: 14,
+                          ),
+                          label: Text(
+                            pickup['status'] == 'assigned' ? 'Start' : 'Complete',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: pickup['status'] == 'assigned' ? Colors.blue : Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+              },
             ),
           ],
         ),
