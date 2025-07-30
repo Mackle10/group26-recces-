@@ -7,6 +7,9 @@ import 'package:wastemanagement/features/settings/presentation/screens/settings_
 import 'package:wastemanagement/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 import 'package:wastemanagement/core/providers/theme_provider.dart';
+import 'package:wastemanagement/features/history/presentation/screens/history_screen.dart';
+import 'package:wastemanagement/core/services/notification_service.dart';
+import 'package:badges/badges.dart' as badges;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -57,12 +60,22 @@ class _HomeScreenState extends State<HomeScreen> {
       elevation: 0,
       centerTitle: false,
       actions: [
-        IconButton(
-          icon: const Icon(Icons.notifications_outlined),
-          onPressed: () {
-            // Add notification logic here
-          },
-          color: AppColors.white,
+        badges.Badge(
+          badgeContent: const Text(
+            '3',
+            style: TextStyle(color: Colors.white, fontSize: 10),
+          ),
+          showBadge: true,
+          badgeStyle: const badges.BadgeStyle(
+            badgeColor: Colors.red,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {
+              _showNotificationsDialog();
+            },
+            color: AppColors.white,
+          ),
         ),
         IconButton(
           icon: const Icon(Icons.logout),
@@ -192,6 +205,32 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: AppColors.secondary,
                 onTap: () {
                   Navigator.pushNamed(context, AppRoutes.map);
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: _buildActionCard(
+                title: 'Company Dashboard',
+                icon: Icons.business,
+                color: Colors.purple,
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.companyDashboard);
+                },
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildActionCard(
+                title: 'Pickup Flow Demo',
+                icon: Icons.play_circle_filled,
+                color: Colors.orange,
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.pickupFlowDemo);
                 },
               ),
             ),
@@ -346,7 +385,10 @@ class _HomeScreenState extends State<HomeScreen> {
             // Already on home
             break;
           case 1: // History
-            // Navigate to history or show history
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HistoryScreen()),
+            );
             break;
           case 2: // Settings
             Navigator.push(
@@ -366,6 +408,125 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.white,
       elevation: 8,
       showUnselectedLabels: true,
+    );
+  }
+
+  void _showNotificationsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.notifications_outlined, color: AppColors.primary),
+            const SizedBox(width: 8),
+            const Text('Notifications'),
+          ],
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildNotificationItem(
+                'Pickup Scheduled',
+                'Your recyclable waste pickup is scheduled for tomorrow at 10:00 AM',
+                Icons.schedule,
+                Colors.blue,
+                '2 hours ago',
+              ),
+              const Divider(),
+              _buildNotificationItem(
+                'Payment Received',
+                'You earned UGX 15,000 from your last recyclable pickup',
+                Icons.attach_money,
+                Colors.green,
+                '1 day ago',
+              ),
+              const Divider(),
+              _buildNotificationItem(
+                'Pickup Completed',
+                'Your general waste has been successfully collected',
+                Icons.check_circle,
+                Colors.green,
+                '2 days ago',
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // Navigate to full notifications screen
+            },
+            child: const Text('View All'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotificationItem(
+    String title,
+    String message,
+    IconData icon,
+    Color iconColor,
+    String time,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icon,
+              color: iconColor,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  message,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  time,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey[500],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

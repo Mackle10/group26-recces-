@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wastemanagement/core/constants/app_colors.dart';
-import 'package:wastemanagement/data/models/recycle_model.dart';
-import 'package:wastemanagement/data/datasources/remote/firebase_datasource.dart';
+import 'package:wastemanagement/data/models/pickup_history_model.dart';
+import 'package:wastemanagement/core/services/history_service.dart';
+import 'package:wastemanagement/core/services/notification_service.dart';
+import 'package:wastemanagement/core/services/pickup_assignment_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SchedulePickupScreen extends StatefulWidget {
@@ -20,6 +22,10 @@ class _SchedulePickupScreenState extends State<SchedulePickupScreen> {
   final LatLng _center = const LatLng(-1.2921, 36.8219);
   String? _selectedWasteType;
   DateTime? _selectedDate;
+  final HistoryService _historyService = HistoryService();
+  final NotificationService _notificationService = NotificationService();
+  final PickupAssignmentService _assignmentService = PickupAssignmentService();
+  bool _isLoading = false;
 
   Widget _buildBottomNavigationBar() {
     return BottomNavigationBar(
@@ -204,31 +210,24 @@ class _SchedulePickupScreenState extends State<SchedulePickupScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed:
-                          _selectedDate == null || _selectedWasteType == null
+                      onPressed: _selectedDate == null ||
+                          _selectedWasteType == null ||
+                          _isLoading
                           ? null
-                          : () async {
-                              // Handle pickup scheduling
-                              await (FirebaseDataSourceImpl()).postRecyclable(
-                                RecyclableModel(
-                                  userId:
-                                      FirebaseAuth.instance.currentUser!.uid,
-                                  type: _selectedWasteType!,
-                                  quantity: 1,
-                                  price: 100,
-                                  status: 'pending',
-                                  createdAt: DateTime.now(),
-                                  purchasedAt: _selectedDate,
-                                  purchasedBy:
-                                      FirebaseAuth.instance.currentUser!.uid,
-                                ),
-                              );
-                              Navigator.pop(context);
-                            },
-                      child: const Text(
-                        'Confirm Pickup',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                          : _schedulePickup,
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Text(
+                              'Confirm Pickup',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                     ),
                   ),
                 ],
@@ -239,5 +238,88 @@ class _SchedulePickupScreenState extends State<SchedulePickupScreen> {
       ),
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
+  }
+
+  Future<void> _schedulePickup() async {
+    if (_selectedDate == null || _selectedWasteType == null) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Create pickup history entry
+      final pickup = PickupHistoryModel(
+        id: '', // Will be set by Firestore
+        userId: FirebaseAuth.instance.currentUser!.uid,
+        wasteType: _selectedWasteType!,
+        status: 'pending',
+        scheduledDate: _selectedDate!,
+        address: widget.streetName != null && widget.plotNumber != null
+            ? '${widget.streetName}, Plot ${widget.plotNumber}'
+            : null,
+        latitude: _center.latitude,
+        longitude: _center.longitude,
+      );
+
+      // Save to history
+      String pickupId = await _historyService.createPickupHistory(pickup);
+
+      // Auto-assign pickup to nearest company
+      try {
+        await _assignmentService.assignPickupToCompany(pickupId);
+      } catch (e) {
+        print('Failed to auto-assign pickup: $e');
+        // Continue even if assignment fails - pickup will remain pending
+      }
+
+      // Schedule notification reminder (1 hour before pickup)
+      DateTime reminderTime = _selectedDate!.subtract(const Duration(hours: 1));
+      if (reminderTime.isAfter(DateTime.now())) {
+        await _notificationService.scheduleNotification(
+          id: pickupId.hashCode,
+          title: 'Pickup Reminder',
+          body: 'Your ${_selectedWasteType!} pickup is scheduled in 1 hour',
+          scheduledDate: reminderTime,
+          payload: '{"type": "pickup_reminder", "pickupId": "$pickupId"}',
+        );
+      }
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Pickup scheduled successfully!'),
+            backgroundColor: AppColors.primary,
+            action: SnackBarAction(
+              label: 'View',
+              textColor: Colors.white,
+              onPressed: () {
+                // Navigate to history screen
+                Navigator.pushReplacementNamed(context, '/home');
+              },
+            ),
+          ),
+        );
+
+        // Navigate back to home
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to schedule pickup: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 }

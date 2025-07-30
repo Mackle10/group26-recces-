@@ -1,12 +1,14 @@
 import 'package:wastemanagement/features/auth/presentation/screens/login_screen.dart';
 import 'package:wastemanagement/features/auth/presentation/screens/register_screen.dart';
-import 'package:wastemanagement/features/company/company_dashboard.dart';
+import 'package:wastemanagement/features/company/enhanced_company_dashboard.dart';
 import 'package:wastemanagement/features/home/presentation/screens/home_screen.dart';
 import 'package:wastemanagement/features/home/presentation/screens/plain_intro_screen.dart';
 import 'package:wastemanagement/features/pickup/presentation/screens/schedule_pickup_screen.dart';
-import 'package:wastemanagement/features/recyclable/presentation/screens/recyclables_marketplace.dart';
+import 'package:wastemanagement/features/recyclable/presentation/screens/enhanced_recyclables_marketplace.dart';
+import 'package:wastemanagement/features/recyclable/presentation/screens/enhanced_sell_screen.dart';
 import 'package:wastemanagement/features/payment/presentation/screens/payment_screen.dart';
 import 'package:wastemanagement/features/map/presentation/screens/map_screen.dart';
+import 'package:wastemanagement/features/demo/pickup_flow_demo.dart';
 
 class AppRoutes {
   static const initial = '/';
@@ -19,6 +21,7 @@ class AppRoutes {
   static const recyclablesMarketplace = '/recyclables';
   static const payment = '/payment';
   static const map = '/map';
+  static const pickupFlowDemo = '/pickup-flow-demo';
 
   static final routes = {
     '/': (context) => const PlainIntroScreen(),
@@ -26,10 +29,12 @@ class AppRoutes {
     '/register': (context) => const RegisterScreen(),
     '/home': (context) => const HomeScreen(),
     '/schedule-pickup': (context) => const SchedulePickupScreen(),
-    '/company-dashboard': (context) => const CompanyDashboard(),
-    '/recyclables': (context) => const RecyclablesMarketplace(),
+    '/company-dashboard': (context) => const EnhancedCompanyDashboard(),
+    '/recyclables': (context) => const EnhancedRecyclablesMarketplace(),
+    '/sell': (context) => const EnhancedSellScreen(),
     '/payment': (context) => const PaymentScreen(),
     '/map': (context) => const MapScreen(),
+    '/pickup-flow-demo': (context) => const PickupFlowDemo(),
     // Add other routes here
   };
   // O11 abstract class AppRoutes {

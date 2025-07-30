@@ -11,17 +11,27 @@ import 'package:wastemanagement/routes/route_generator.dart';
 import 'package:wastemanagement/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wastemanagement/features/auth/domain/auth_repo.dart';
 import 'package:wastemanagement/core/providers/theme_provider.dart';
+import 'package:wastemanagement/core/services/notification_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   print('Initializing Firebase...'); // Debug log
   await dotenv.load(fileName: ".env");
+  
+  // Initialize timezone
+  tz.initializeTimeZones();
+  
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
     print('Firebase initialized successfully'); // Debug log
+    
+    // Initialize notification service
+    await NotificationService().initialize();
+    print('Notification service initialized successfully'); // Debug log
   } catch (e) {
     print('Firebase initialization failed: $e'); // Debug log
   }
