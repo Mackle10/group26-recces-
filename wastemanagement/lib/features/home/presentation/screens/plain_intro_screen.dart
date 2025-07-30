@@ -65,7 +65,7 @@ class PlainIntroScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'Easily manage your waste pickups, payments, and recyclables. Join us in making the world cleaner and greener! 🌍✨',
+                  'Easily manage your waste pickups, payments, and recyclables. Please Join us in making the world cleaner and greener! 🌍✨',
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.white70,
