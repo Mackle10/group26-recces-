@@ -50,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _buildPreferencesSection(),
             const SizedBox(height: 24),
 
-            // Account Section
+            // Account Section.
             _buildAccountSection(),
             const SizedBox(height: 24),
 
