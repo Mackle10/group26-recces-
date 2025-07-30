@@ -80,7 +80,7 @@ class _CompanyDashboardState extends State<CompanyDashboard> {
       for (var doc in pickupSnapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;
 
-        // Get user details
+        // Get user details.
         final userDoc = await FirebaseFirestore.instance
             .collection('users')
             .doc(data['userId'])
