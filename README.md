@@ -25,8 +25,8 @@ A Flutter-based mobile application that revolutionizes waste collection and recy
 - **Flutter** - Cross-platform mobile development framework
 - **Google Maps API** - For geolocation and route optimization
 - **Firebase** - Backend services (authentication, database, cloud functions)
-- **not done(Mobile Money API** - For cashless transactions)
-- **not done(Location Services** - For real-time GPS tracking)
+- **(Mobile Money API** - For cashless transactions)
+- **(Location Services** - For real-time GPS tracking)
 
 ### Key Packages Used:
 - `google_maps_flutter` - Interactive maps integration
